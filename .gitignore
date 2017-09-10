@@ -5,8 +5,8 @@
 /backup/backup_zip
 !/backup/backup_zip/.gitkeep
 
-/extract/
+/extract/*
 
-/listing/
+/listing/*
 
 /facturation/
