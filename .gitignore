@@ -1,1 +1,11 @@
 /config/config.inc.php
+/asbv_transport_local-sqldump.sql
+
+
+/backup/backup_zip
+!/backup/backup_zip/.gitkeep
+
+/extract/
+!/extract/.gitkeep
+/facturation/
+/listing/

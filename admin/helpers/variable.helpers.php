@@ -5,15 +5,19 @@ function clean_variables($variables_to_clean) {
 	$count_error = 0;
 	$found_error_in_datas = FALSE;
 	$array_field_error = array();
-	
+
 	if (!is_array($variables_to_clean)) {
 		return FALSE;
 		die();
 	}
-	
+
 	foreach ($variables_to_clean as $index => &$variable) {
 		if (isset($variable['value']) && $variable['value'] != '') {
-			$variable['value'] = clean_variable($variable['value'], $variable['type'], $variable['sub_type']);
+			if ( isset($variable['sub_type']) ) {
+				$variable['value'] = clean_variable($variable['value'], $variable['type'], $variable['sub_type']);
+			} else {
+				$variable['value'] = clean_variable($variable['value'], $variable['type'], '');
+			}
 		} elseif ($variable['type']=='bool') {
 			$variable['value'] = 0;
 		} else {
@@ -21,13 +25,13 @@ function clean_variables($variables_to_clean) {
 				$found_error_in_datas = TRUE;
 				$array_field_error[] = $index;
 				$count_error++;
-				
+
 				//destruction de l'entree problematique
 				unset($variables_to_clean[$index]);
 			}
 		}
 	}
-	
+
 	return array($variables_to_clean, $count_error, $array_field_error);
 }
 
@@ -66,7 +70,7 @@ function clean_variable($value, $type, $sub_type='') {
 			if (!isset($value)) {
 				return 0;
 			}
-			
+
 			if ($value == 1 || $value == TRUE || $value == 'checked') {
 				return 1;
 			} else {
@@ -76,7 +80,7 @@ function clean_variable($value, $type, $sub_type='') {
 		case "tel":
 			//$tmp_var = preg_replace('/[\\\/\. \(\)\-]/', '', $value);
 			$tmp_var = preg_replace('/[^\d]/', '', $value);
-			
+
 			if (strlen($tmp_var) == 13) {
 				return $tmp_var;
 			} elseif (strlen($tmp_var) == 10) {
@@ -84,7 +88,7 @@ function clean_variable($value, $type, $sub_type='') {
 			} else {
 				return $tmp_var;
 			}
-			
+
 			break;
 		case "id":
 			if (is_numeric($value)) {

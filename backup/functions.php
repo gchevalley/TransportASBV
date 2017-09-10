@@ -8,10 +8,10 @@ require_once( str_replace ( '\\', '/', dirname(dirname(__FILE__))) . '/admin/cla
 * @author Rochak Chauhan
 */
 
-class createZip  {  
+class createZip  {
 
     public $compressedData = array();
-    public $centralDirectory = array(); // central directory   
+    public $centralDirectory = array(); // central directory
     public $endOfCentralDirectory = "\x50\x4b\x05\x06\x00\x00\x00\x00"; //end of Central directory record
     public $oldOffset = 0;
 
@@ -21,14 +21,14 @@ class createZip  {
      * @param $directoryName string
      *
      */
-    
+
     public function addDirectory($directoryName) {
-        $directoryName = str_replace("\\", "/", $directoryName);  
+        $directoryName = str_replace("\\", "/", $directoryName);
 
         $feedArrayRow = "\x50\x4b\x03\x04";
-        $feedArrayRow .= "\x0a\x00";    
-        $feedArrayRow .= "\x00\x00";    
-        $feedArrayRow .= "\x00\x00";    
+        $feedArrayRow .= "\x0a\x00";
+        $feedArrayRow .= "\x00\x00";
+        $feedArrayRow .= "\x00\x00";
         $feedArrayRow .= "\x00\x00\x00\x00";
 
         $feedArrayRow .= pack("V",0);
@@ -36,21 +36,21 @@ class createZip  {
         $feedArrayRow .= pack("V",0);
         $feedArrayRow .= pack("v", strlen($directoryName) );
         $feedArrayRow .= pack("v", 0 );
-        $feedArrayRow .= $directoryName;  
+        $feedArrayRow .= $directoryName;
 
         $feedArrayRow .= pack("V",0);
         $feedArrayRow .= pack("V",0);
         $feedArrayRow .= pack("V",0);
 
         $this -> compressedData[] = $feedArrayRow;
-        
+
         $newOffset = strlen(implode("", $this->compressedData));
 
         $addCentralRecord = "\x50\x4b\x01\x02";
-        $addCentralRecord .="\x00\x00";    
-        $addCentralRecord .="\x0a\x00";    
-        $addCentralRecord .="\x00\x00";    
-        $addCentralRecord .="\x00\x00";    
+        $addCentralRecord .="\x00\x00";
+        $addCentralRecord .="\x0a\x00";
+        $addCentralRecord .="\x00\x00";
+        $addCentralRecord .="\x00\x00";
         $addCentralRecord .="\x00\x00\x00\x00";
         $addCentralRecord .= pack("V",0);
         $addCentralRecord .= pack("V",0);
@@ -61,47 +61,47 @@ class createZip  {
         $addCentralRecord .= pack("v", 0 );
         $addCentralRecord .= pack("v", 0 );
         $ext = "\x00\x00\x10\x00";
-        $ext = "\xff\xff\xff\xff";  
+        $ext = "\xff\xff\xff\xff";
         $addCentralRecord .= pack("V", 16 );
 
         $addCentralRecord .= pack("V", $this -> oldOffset );
         $this -> oldOffset = $newOffset;
 
-        $addCentralRecord .= $directoryName;  
+        $addCentralRecord .= $directoryName;
 
-        $this -> centralDirectory[] = $addCentralRecord;  
-    }    
-    
+        $this -> centralDirectory[] = $addCentralRecord;
+    }
+
     /**
      * Function to add file(s) to the specified directory in the archive
      *
      * @param $directoryName string
      *
      */
-    
+
     public function addFile($data, $directoryName)   {
 
-        $directoryName = str_replace("\\", "/", $directoryName);  
-    
+        $directoryName = str_replace("\\", "/", $directoryName);
+
         $feedArrayRow = "\x50\x4b\x03\x04";
-        $feedArrayRow .= "\x14\x00";    
-        $feedArrayRow .= "\x00\x00";    
-        $feedArrayRow .= "\x08\x00";    
+        $feedArrayRow .= "\x14\x00";
+        $feedArrayRow .= "\x00\x00";
+        $feedArrayRow .= "\x08\x00";
         $feedArrayRow .= "\x00\x00\x00\x00";
 
-        $uncompressedLength = strlen($data);  
-        $compression = crc32($data);  
-        $gzCompressedData = gzcompress($data);  
+        $uncompressedLength = strlen($data);
+        $compression = crc32($data);
+        $gzCompressedData = gzcompress($data);
         $gzCompressedData = substr( substr($gzCompressedData, 0, strlen($gzCompressedData) - 4), 2);
-        $compressedLength = strlen($gzCompressedData);  
+        $compressedLength = strlen($gzCompressedData);
         $feedArrayRow .= pack("V",$compression);
         $feedArrayRow .= pack("V",$compressedLength);
         $feedArrayRow .= pack("V",$uncompressedLength);
         $feedArrayRow .= pack("v", strlen($directoryName) );
         $feedArrayRow .= pack("v", 0 );
-        $feedArrayRow .= $directoryName;  
+        $feedArrayRow .= $directoryName;
 
-        $feedArrayRow .= $gzCompressedData;  
+        $feedArrayRow .= $gzCompressedData;
 
         $feedArrayRow .= pack("V",$compression);
         $feedArrayRow .= pack("V",$compressedLength);
@@ -112,10 +112,10 @@ class createZip  {
         $newOffset = strlen(implode("", $this->compressedData));
 
         $addCentralRecord = "\x50\x4b\x01\x02";
-        $addCentralRecord .="\x00\x00";    
-        $addCentralRecord .="\x14\x00";    
-        $addCentralRecord .="\x00\x00";    
-        $addCentralRecord .="\x08\x00";    
+        $addCentralRecord .="\x00\x00";
+        $addCentralRecord .="\x14\x00";
+        $addCentralRecord .="\x00\x00";
+        $addCentralRecord .="\x08\x00";
         $addCentralRecord .="\x00\x00\x00\x00";
         $addCentralRecord .= pack("V",$compression);
         $addCentralRecord .= pack("V",$compressedLength);
@@ -130,9 +130,9 @@ class createZip  {
         $addCentralRecord .= pack("V", $this -> oldOffset );
         $this -> oldOffset = $newOffset;
 
-        $addCentralRecord .= $directoryName;  
+        $addCentralRecord .= $directoryName;
 
-        $this -> centralDirectory[] = $addCentralRecord;  
+        $this -> centralDirectory[] = $addCentralRecord;
     }
 
     /**
@@ -143,18 +143,18 @@ class createZip  {
 
     public function getZippedfile() {
 
-        $data = implode("", $this -> compressedData);  
-        $controlDirectory = implode("", $this -> centralDirectory);  
+        $data = implode("", $this -> compressedData);
+        $controlDirectory = implode("", $this -> centralDirectory);
 
-        return   
-            $data.  
-            $controlDirectory.  
-            $this -> endOfCentralDirectory.  
-            pack("v", sizeof($this -> centralDirectory)).     
-            pack("v", sizeof($this -> centralDirectory)).     
-            pack("V", strlen($controlDirectory)).             
-            pack("V", strlen($data)).                
-            "\x00\x00";                             
+        return
+            $data.
+            $controlDirectory.
+            $this -> endOfCentralDirectory.
+            pack("v", sizeof($this -> centralDirectory)).
+            pack("v", sizeof($this -> centralDirectory)).
+            pack("V", strlen($controlDirectory)).
+            pack("V", strlen($data)).
+            "\x00\x00";
     }
 
 
@@ -235,7 +235,7 @@ class MySQL_Backup
     {
       $host = $this->server . ':' . $this->port;
       $this->link_id = mysql_connect($host, $this->username, $this->password);
-      
+
       mysql_set_charset('utf8', $this->link_id);
     }
     if ($this->link_id)
@@ -331,7 +331,7 @@ class MySQL_Backup
         $value .= '# Dumping data for table `' . $table . '`' . MSB_NL;
         $value .= '#' . MSB_NL . MSB_NL;
       }
-            
+
       $value .= $this->_GetInserts($table);
     }
     $value .= MSB_NL . MSB_NL;
@@ -343,22 +343,22 @@ class MySQL_Backup
   function _GetInserts($table)
   {
     global $dbh;
-    
+
   	$sql = "SELECT * ";
   	$sql .= " FROM `" . $table . "`";
-  	
+
   	$sth = $dbh->query($sql);
-  	
+
   	$result = $sth->fetchAll(PDO::FETCH_ASSOC);
-  	
+
   	if (count($result) > 0) {
-  		
+
   		$values = '';
-  		
+
   		//header phpmyadmin style
   		$first_field = TRUE;
   		$list_field = '';
-  		
+
   		foreach ($result[0] as $column => $data) {
   			if ($first_field === TRUE) {
   				$list_field .= '`' . $column . '`';
@@ -367,25 +367,25 @@ class MySQL_Backup
   				$list_field .= ', `' . $column . '`';
   			}
   		}
-  		 
-  		
+
+
   		 $first_entry = TRUE;
-  		 
+
   		foreach ($result as $index => $row) {
-  			
+
   			if ($index % 1000 === 0) {
-  				
+
   				if ($first_entry === FALSE) {
   					$values .= '; ' . MSB_NL . MSB_NL;
   				}
-  				
+
   				$values .= 'INSERT INTO ' . $table . ' (' . $list_field . ') VALUES '. MSB_NL ;
   				$values .= '(';
   				$first_entry = FALSE;
   			} else {
   				$values .= ', ' . MSB_NL . '(';
   			}
-  			
+
   			$line_data = '';
   			$first_data = TRUE;
   			foreach ($row as $data) {
@@ -396,25 +396,25 @@ class MySQL_Backup
   					$line_data .= ', \'' . addslashes($data) . '\'';
   				}
   			}
-  			
+
   			$values .= $line_data . ')';
-  			
+
   		}
-  		
+
   		return $values . ';';
-  		
+
   	} else {
   		return '';
   	}
-  		
+
   	/*
   	if (!($result = $this->_Query('SELECT * FROM ' . $table)))
     {
       return false;
     }
-    
-    
-    
+
+
+
     while ($row = mysql_fetch_row($result))
     {
       // header phpmyadmin style
@@ -434,14 +434,14 @@ class MySQL_Backup
 
   function _Retrieve()
   {
-    
+    $value = '';
     if (!$this->_Connect())
     {
       return false;
     }
     if ($this->comments)
     {
-    	
+
     $value .= '#' . MSB_NL;
       $value .= '# MySQL database dump' . MSB_NL;
       $value .= '# Created by MySQL_Backup class, ver. ' . MSB_VERSION . MSB_NL;
@@ -450,13 +450,13 @@ class MySQL_Backup
       $value .= '# Generated: ' . date('M j, Y') . ' at ' . date('H:i') . MSB_NL;
       $value .= '# MySQL version: ' . mysql_get_server_info() . MSB_NL;
       $value .= '# PHP version: ' . phpversion() . MSB_NL;
-      
+
       $value .= MSB_NL;
       $value .= MSB_NL;
-      
+
       $value .= 'SET FOREIGN_KEY_CHECKS=0;' . MSB_NL;
       $value .= 'SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";' . MSB_NL;
-      
+
       $value .= MSB_NL;
 
 
@@ -464,11 +464,11 @@ class MySQL_Backup
       $value .= '/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;' . MSB_NL;
       $value .= '/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;' . MSB_NL;
       $value .= '/*!40101 SET NAMES utf8 */;' . MSB_NL;
-      
+
       $value .= MSB_NL;
       $value .= MSB_NL;
       $value .= MSB_NL;
-      
+
       if (!empty($this->database))
       {
         $value .= '#' . MSB_NL;
@@ -518,19 +518,19 @@ class MySQL_Backup
     return true;
   }
 
-} 
+}
 
 function mailAttachment($file, $mailto, $from_mail, $from_name, $replyto, $subject, $message) {
 
     $filename = basename($file);
     $file_size = filesize($file);
-    
+
     /*
     $handle = fopen($file, "r");
     $content = fread($handle, $file_size);
     fclose($handle);
     */
-    
+
     $content = chunk_split(base64_encode(file_get_contents($file)));
     //$content = chunk_split(base64_encode($content));
     $uid = md5(uniqid(time()));
@@ -555,7 +555,7 @@ function mailAttachment($file, $mailto, $from_mail, $from_name, $replyto, $subje
     } else {
         echo "mail send ... ERROR!";
     }
-} 
+}
 
 
 
@@ -588,5 +588,5 @@ function pr($val)
     print_r($val);
     echo '</pre>';
 }
-  
-?> 
+
+?>
