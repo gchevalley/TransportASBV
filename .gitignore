@@ -6,10 +6,7 @@
 !/backup/backup_zip/.gitkeep
 
 /extract/
-!/extract/.gitkeep
 
 /listing/
-!/listing/.gitkeep
 
 /facturation/
-/listing/
