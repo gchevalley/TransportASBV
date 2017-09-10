@@ -1,0 +1,101 @@
+.MonthPicker {
+	margin:0;
+	padding:0;
+	font:bold 12px Arial;
+	color:#ffe;
+	/*background-image:url("http://project.yctin.com/monthpicker/demo/bg.png");*/
+	background-color: #016648;
+}
+
+.MonthPicker th{
+	padding-left:20px;
+	color: #B5DC10;
+}
+
+.MonthPicker td{
+	padding:0px;
+}
+
+.MonthPicker a{
+	text-decoration:none;
+	color:white;
+}
+
+.MonthPicker a:hover{
+	background:#ffe;
+}
+
+.MonthPicker a:hover span{
+	background:#ffe;
+	color:#f60;
+}
+
+.MonthPicker a.li{
+	position:relative;
+}
+	
+.MonthPicker ul{
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+
+.MonthPicker ul table{
+	width:100%;
+	border-collapse:collapse;
+}
+
+.MonthPicker ul ul{
+	position:absolute;
+	visibility:hidden;
+	left:-1px;
+	top:20px;
+	z-index:2;
+	border:1px;
+	solid #999;
+}
+
+.MonthPicker ul ul .selected{
+	background:#f60;
+	color:#fff;
+}
+
+.MonthPicker li{
+	position:relative;
+	width:60px;
+	float:left;
+	text-align:center;
+}
+
+.MonthPicker li a{
+	display:block;
+	background-color: red;
+}
+
+.MonthPicker .li:hover ul{
+	background:#ffe;
+	visibility:visible;
+}
+
+.MonthPicker .li:hover li a:hover{
+	background:#09f;
+	color:#ffe;
+}
+
+.MonthPicker span{
+	display:inline-block;
+	width:58px;
+	padding:1px;
+	line-height:19px;
+	text-align:center;
+	cursor:pointer;
+}
+
+.MonthPicker .month span{
+	width:60px;
+}
+
+.MonthPicker .selected{
+	/*background:#ffe;*/
+	background: red;
+}

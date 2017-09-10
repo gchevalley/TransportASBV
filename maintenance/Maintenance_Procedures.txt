@@ -1,0 +1,87 @@
+Miscellaneous  Maintenenace Procedures ASBV 
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+1)  Ajouter  une Categories  pour les transports
+
+    Editer  :  transport.class.php dans  c:/ASBV/Transportasbv/admin/transport   et  a la ligne  1850 ajouter 
+
+    					/*
+					 Comment the section below if you don't want to add new categories
+
+					*/
+					$html_code .= '<a href="?module=transport_categorie&action=add">';
+						$html_code .= 'Ajouter une catégorie';
+					$html_code .= '</a>';
+
+					/*
+					 Comment the section below if you don't want to add new categories
+					*/
+
+au lieu de  
+
+    					/*
+ 
+					$html_code .= '<a href="?module=transport_categorie&action=add">';
+						$html_code .= 'Ajouter une catégorie';
+					$html_code .= '</a>';
+
+					*/
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+2) Suppression  d'un beneficiaire 
+
+   a) Chercher l'ID de cette personne  avec phpmyadmin ( cliquer  dans la table beneficiaire ) 
+   b) Editer le  fichier  c:/ASBV/Transportasbv/maintenance/op_db/delete_beneficiaire 
+   c) Remplacer la valeur   dans le script et sauver le fichier 
+   
+       ////////////////////////////////
+       $id_beneficiaire_to_delete = 78;
+       ///////////////////////////////
+
+   d) Executer la procedure  dans  le navigateur FIREFOX avec l'URL 
+
+   http://localhost/TransportASBV/maintenance/op_db/delete_beneficiaire.php
+
+   e) verifier avec  http://localhost/TransportASBV/website/index.php?module=beneficiaire&action=list que la suppression a ete effectuee
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+
+3) Suppresion d'un Lieu  
+
+   a)  utiliser phpmyadmin ( fonction Browse ) dans la table lieu et enlever les doublons dans  l'entree à supprimer en utilsiant la case  avec la croix rouge
+       NE PAS utiliser la  fonction Drop qui s'applique a toute la table !!
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+Liste  des changements  en attente  :
+
+
+
+Cher Michel,
+Je suis passé cet après-midi à la permanence et voici quelques réflexions:
+Peut-on ajouter dans la liste des motifs des transports:
+•	Chimiothérapie
+•	Dentiste
+•	Repas
+
+Il serait bon de supprimer dans la liste des passagers:
+•	Mr Paul RENAUD, assistant social du CMS de Nyon
+
+Enfin dans la liste des trajets, il y a des doubles entrées:
+•	Crans-près-Céligny
+•	Givrains
+•	Gland
+•	Hôpital de Nyon
+•	Nyxon
+•	St Cergue
+
+J'ai ajusté le code postal de Féchy qui affichait: 0000 (ce qui doit dérouter Google dans le calcul des Kms
+
+Verifier la table  des  trajets pre defin is  ( trajet_pre_defini ) 
+
+--------------------------------------------------------------------------------------------------------------------------------------------

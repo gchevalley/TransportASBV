@@ -1,0 +1,153 @@
+﻿
+<head>
+<title>Help Suggestion Chauffeur ( Moyennes&nbsp; Pondérée )</title>
+</head>
+
+<body text="#000066" bgcolor="#99CCFF" background="http://localhost/TransportASBV/website/img/wall.gif">
+
+<p align="center">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img border="0" src="./img/mozill5.gif" width="101" height="110">&nbsp;&nbsp;&nbsp;&nbsp;
+<font color="#0000FF" face="Comic Sans MS" size="5">&nbsp;Moyennes pondérées utilisées pour la 
+suggestion de&nbsp; chauffeur&nbsp; </font></p>
+<p><font face="Comic Sans MS">A ce stade&nbsp; le système possède pour chaque 
+critère et chauffeur potentiel une liste de notes qualificatives brutes&nbsp; 
+dont on va pondérer l&#39;importance.&nbsp; Cette pondération va attribuer a chaque&nbsp; 
+critère une importance relative qui dépend des choix définis par 
+l&#39;administrateur de la&nbsp; filiale.&nbsp; Par exemple la distance entre le 
+domicile du chauffeur et du passager a le poids plus important dans l&#39;attribution 
+de la note finale.</font></p>
+<p align="center">
+<img border="0" src="./img/help/Normalisation.jpg" width="642" height="483"></p>
+<p align="center">
+&nbsp;</p>
+<p align="center">
+<font face="Comic Sans MS" size="4">Exemple de calcul&nbsp; pour le premier 
+chauffeur ( Symbolisée par la&nbsp; Voiture Bleue )&nbsp;&nbsp; :&nbsp;&nbsp;&nbsp;
+</font></p>
+<div align="center">
+	<table border="2" width="64%" bordercolorlight="#000080" bordercolordark="#000080" bgcolor="#FFFFCC">
+		<tr>
+			<td width="314">
+			<p align="center"><font face="Comic Sans MS">Note Brute ( Voir 
+			Normalisation )</font></td>
+			<td>
+			<p align="center"><font face="Comic Sans MS">Pondération&nbsp; exprimée en %</font></p>
+			<p align="center"><font face="Comic Sans MS">Ajustable par&nbsp; 
+			filiale voir ci dessous </font></td>
+			<td width="364">
+			<p align="center"><font face="Comic Sans MS">Score&nbsp; pondéré (&nbsp; 
+			Notes cumulées )</font></td>
+		</tr>
+		<tr>
+			<td width="314" align="center">
+			<font face="Comic Sans MS" color="#0000FF">80&nbsp; ( Distance )</font></td>
+			<td align="center"><font face="Comic Sans MS" color="#800080">35</font></td>
+			<td width="364" align="center"><font face="Comic Sans MS">80 *
+			<font color="#800080">0.35 </font>= <font color="#FF0000">28 </font>
+			</font></td>
+		</tr>
+		<tr>
+			<td width="314" align="center">
+			<font face="Comic Sans MS" color="#0000FF">50 ( Nombre de transport 
+			)</font></td>
+			<td align="center"><font face="Comic Sans MS" color="#800080">5</font></td>
+			<td width="364" align="center"><font face="Comic Sans MS">50 *
+			<font color="#800080">0.05</font> =&nbsp; <font color="#FF0000">2.5</font></font></td>
+		</tr>
+		<tr>
+			<td width="314" align="center">
+			<font face="Comic Sans MS" color="#0000FF">100 ( A déjà transporté )</font></td>
+			<td align="center"><font face="Comic Sans MS" color="#800080">25</font></td>
+			<td width="364" align="center"><font face="Comic Sans MS">100 *
+			<font color="#800080">0.25</font> = <font color="#FF0000">25</font></font></td>
+		</tr>
+		<tr>
+			<td width="314" align="center">
+			<font face="Comic Sans MS" color="#0000FF">80 ( Nombre de trajets )</font></td>
+			<td align="center"><font face="Comic Sans MS" color="#800080">25</font></td>
+			<td width="364" align="center"><font face="Comic Sans MS">80 *
+			<font color="#800080">0.25</font> = <font color="#FF0000">20</font></font></td>
+		</tr>
+		<tr>
+			<td width="314" align="center">
+			<font face="Comic Sans MS" color="#0000FF">0&nbsp; ( Km parcourus )</font></td>
+			<td align="center"><font face="Comic Sans MS" color="#800080">10</font></td>
+			<td width="364" align="center"><font face="Comic Sans MS">0 *&nbsp;
+			<font color="#800080">0.1</font> = <font color="#FF0000">0</font></font></td>
+		</tr>
+		<tr>
+			<td width="314" align="center">
+			<font face="Comic Sans MS" color="#0000FF">0&nbsp; ( Transport 
+			Locaux )</font></td>
+			<td align="center"><font face="Comic Sans MS" color="#800080">20</font></td>
+			<td width="364" align="center"><font face="Comic Sans MS">0 *<font color="#800080"> 
+			0.2</font> = <font color="#FF0000">0 </font></font></td>
+		</tr>
+		<tr>
+			<td width="314" align="center">
+			<font face="Comic Sans MS" color="#0000FF">310 points sur un total 
+			de&nbsp; 600 </font>
+			<p><font face="Comic Sans MS">310 /600&nbsp; = 0.5166 -&gt; 52 /100 
+			Moyenne non pondérée&nbsp; </font></td>
+			<td align="center"><font face="Comic Sans MS">Total :</font></td>
+			<td width="364" align="center"><font face="Comic Sans MS">
+			<font color="#FF0000">28 + 2.5 + 25&nbsp; + 20</font> = 75.5 -&gt;
+			<font color="#009933">76 / 100</font></font></td>
+		</tr>
+	</table>
+</div>
+<p align="center">&nbsp;</p>
+<p align="center"><font face="Comic Sans MS" size="4">
+<a href="http://localhost/TransportASBV/website/index.php?module=filiale&action=edit&id=1">
+Les paramètres peuvent être ajusté&nbsp; pour chaque filiale (&nbsp; Filiale 
+-&gt;Editer )</a></font></p>
+<p align="center">
+<img border="0" src="./img/help/GLM_Filiale.jpg" width="618" height="327"></p>
+<p align="left">&nbsp;</p>
+<p align="left">&nbsp;</p>
+<p align="center">
+<img border="0" src="./img/help/Moyennes_Ponderees.jpg" width="642" height="483"></p>
+<p align="center">
+<font face="Comic Sans MS">La liste des chauffeurs sera présentée sur votre 
+écran dans l&#39;ordre décroissant de la note finale&nbsp; (&nbsp; 76&nbsp; - 66 - 
+40 )</font></p>
+<p align="center">&nbsp;</p>
+<p><font face="Comic Sans MS">A ce stade&nbsp; on obtient une liste des 
+chauffeurs&nbsp; pour ce transport qui est présentée sur votre&nbsp; écran dans 
+l&#39;ordre d&#39;attribution et il&nbsp; suffira au permanencier d&#39;appeler les 
+chauffeurs&nbsp; en tête de liste&nbsp; jusqu&#39;à l&#39;obtention d&#39;une réponse&nbsp; 
+positive. Des que l&#39;accord du chauffeur est obtenu par téléphone le permanencier 
+va attribuer le mandat de transport et la&nbsp; requête de transport&nbsp; va 
+disparaitre de la liste&nbsp; d&#39;attente. Si le chauffeur le désire le système 
+va lui communiquer tous les détails par courrier électronique y compris les 
+informations d&#39;itinéraire.</font></p>
+<p>&nbsp;</p>
+<table border="1" width="100%" bordercolorlight="#000000" bordercolordark="#000000">
+	<tr>
+		<td width="450" bgcolor="#FFFFCC">
+		<font face="Comic Sans MS" size="2" color="#000080">
+		Création du document&nbsp; :&nbsp; M. Thevoz&nbsp; 7 Février&nbsp; 2011&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</font></td>
+		<td bgcolor="#FFFFCC">
+		<font face="Comic Sans MS" size="2" color="#000080">Mise à jour du 
+		document&nbsp; : 
+		M. Thevoz&nbsp;&nbsp; 7 Février&nbsp; 2011</font></td>
+	</tr>
+	<tr>
+		<td width="450" bgcolor="#FFFFCC">
+		<font face="Comic Sans MS" size="2" color="#000080">
+		Description&nbsp; :&nbsp;Suggestion de chauffeur ( Moyenne Pondérée )</font></td>
+		<td bgcolor="#FFFFCC">
+		<font face="Comic Sans MS" size="2" color="#000080">Révision :&nbsp;&nbsp; 
+		1.23</font></td>
+	</tr>
+	<tr>
+		<td width="450" bgcolor="#FFFFCC"><font face="Comic Sans MS" size="2">
+		<a href="http://localhost/TransportASBV/website/index.php">
+		<font color="#000080">Retour sur la page&nbsp;d&#39; accueil </font> 
+		</a> </font></td>
+		<td bgcolor="#FFFFCC">&nbsp;</td>
+	</tr>
+</table>
+
+&nbsp;

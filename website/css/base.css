@@ -1,0 +1,256 @@
+@CHARSET "UTF-8";
+
+
+body {
+	font-family: Arial;
+	background-color: #E3F7E0;
+	color: #016648;
+}
+
+body a {
+	color: #016648;
+}
+
+label {
+	margin-right: 10px;
+}
+
+select {
+	margin-right: 10px;
+}
+
+input {
+	margin-right: 10px;
+}
+
+.input_nom {
+	width: 150px;
+}
+
+.input_adresse {
+	width : 250px;
+}
+
+.input_npa {
+	width: 70px;
+}
+
+.input_ville {
+	width: 150px;
+}
+
+.input_tel {
+	widht: 140px;
+}
+
+.input_email {
+	width : 250px;
+}
+
+
+.tel_fixe {
+	color: #C92233;
+}
+
+.tel_mobile {
+	color: #005fa4;
+}
+
+
+.hide {
+	display: none;
+}
+
+.show_help {
+	 text-align: right;
+}
+
+
+#container {
+	background-color: #C5E7BE;
+	min-width: 810px;
+	width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#area_header {
+	font-size: 12px;
+}
+
+#area_toolbar {
+	background-color: #016648;
+	color: white;
+}
+
+#toolbar a {
+	text-decoration:none;
+	color: white;
+}
+
+#toolbar li {
+	list-style: none;
+	list-style-position:inside;
+}
+
+.menu_main_enty {
+	color: #B5DC10;
+	float: left;
+	list-style: none;
+	list-style-position:inside;
+	margin: 5px;
+}
+
+
+#calendars_link table {
+	float: left;
+	margin: 5px;
+}
+
+.highlights {
+	background-color: #B5DC10;
+}
+
+.toolbar_hide_sub_menu {
+	display:none;
+}
+
+.required {
+	border-color: red;
+}
+
+#dyn_content {
+	
+}
+
+thead {
+	color: #C92233;
+}
+
+tbody th {
+	color: #005fa4;
+}
+
+tbody th a {
+	color: #005fa4;
+	text-decoration:none;
+}
+
+.table_odd {
+	background-color : #a9d4a0;
+}
+
+.table_even {
+	
+}
+
+.clear-after:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+.mini-calendar {
+	font-size: 12px;
+}
+ 
+.clear-after {
+	display: inline-block;
+}
+/* backslash hack hides from IE Mac \*/
+	* html .clear-after {height: 1%;}
+	.clear-after {display: block;}
+/* end backslash hack */
+
+.status_bar_level_normal {
+	background-color: blue;
+}
+
+.status_bar_level_important {
+	background-color: yellow;
+}
+
+.status_bar_level_warning {
+	background-color: red;
+}
+
+.status_bar_level_error {
+	background-color: black;
+	font-color: white;
+}
+
+
+.calendrier .aujourdhui {
+	background-color: blue;
+	color: white;
+}
+
+.calendrier .non_disponible {
+	background-color: red;
+}
+
+.calendrier .non_dispo_jour_semaine_standard {
+	background-color: black;
+}
+
+.calendrier .non_dispo_jour_semaine_standard_2_periods {
+	background-color: orange;
+}
+
+.calendrier .non_dispo_jour_semaine_standard_1_period {
+	background-color: yellow;
+}
+
+.map_google {
+	width: 400px;
+	height: 400px;
+}
+
+.benevole_inactive {
+	text-decoration: line-through;
+}
+
+
+.header_date_today {
+	color: white;
+	background-color: blue;
+	font-weight: bold;
+}
+
+.transport_pending {
+	font-weight: bold;
+}
+
+.transport_cloture {
+	font-style: italic;
+}
+
+.transport_annule {
+	text-decoration: line-through;
+}
+
+.error {
+	color: red;
+	font-weight: bolder;
+}
+
+.emergency_0 {
+	color: white;
+	background-color: black;
+}
+
+.emergency_1 {
+	color: white;
+	background-color: red;
+}
+
+.emergency_2 {
+	color: white;
+	background-color: orange;
+}
+
+.emergency_3 {
+	background-color: yellow;
+}

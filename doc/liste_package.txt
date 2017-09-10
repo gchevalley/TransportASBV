@@ -1,0 +1,150 @@
+Software Package of interest:
+*******************
+
+mySQL workbench:   http://dev.mysql.com/downloads/mirror.php?id=398176#mirrors   
+Editplus           http://www.editplus.com/download.html
+Notepad+           http://download.cnet.com/Notepad/3000-2352_4-10327521.html
+mysql Front        Version 2,5 ( seems to be obsoleted )
+SQQL Front         Version 5.1 Build 4.16 ou  Version 3.2  http://www.brothersoft.com/mysql-front-80299.html ou http://mysql.brothersoft.com/mysql5.0.41
+Excel  PhP         http://phpexcel.codeplex.com/releases/view/26479#DownloadId=183639
+                   Une fois dézippé, renommez le sous-dossier "Classes" en "phpxls" et déplacez ce dossier "phpxls" dans /TransportASBV/config/
+
+7 zip              http://www.7-zip.org/download.html
+
+Hardware Phone :
+***************
+
+La personne de contact au service informatique de l'Etat de Vaud est M. Jean-Marc Guilliani ( jean-marc.giuliani@vd.ch 021 316 50 38)
+ 
+Il s'occupe de l'informatique pour le CSR de Nyon.
+ 
+Pour faire du CTI First Party, il vous faut:
+- un appareil OpenPhone 63 (minimum)             :    OP63S             CHF 290.- HT
+- un adaptateur V24 pour OpenPhone 63/65         :    OP60AV.24S        CHF 350.- HT
+- Driver TAPI OpenCom Einplatz V5.10             :    -
+ 
+ 
+Fabrice Romailler
+Responsable Régional - Service Technique
+
+Aastra Telecom Schweiz AG
+Av. de Longemalle 13
+CH-1020 Renens 
+T	+41 21 633 0519
+F	+41 21 633 0549
+fromailler@aastra.com 
+ 
+Hotline
+T	0848 11 13 15	Partenaires et clients avec contrat de maintenance
+T	0900 11 13 15	Clients sans contrat de maintenance (CHF 3.-/minute, depuis le réseau fixe)
+www.aastra.ch 
+
+
+Hardware for  Router 3G :
+************************
+
+http://www.prodimex.ch/pInfos.aspx?CODE=42603 info sur la page du constructeur :
+
+http://www.netgear.co.uk/wireless_3g_router_mbr624gu.php 
+la liste des opérateurs nativement supportés, certains utilisent la clé de la permanence donc pas de problème au niveau du hardware
+
+http://powershift.netgear.com/landing/en-us/3g_usb_modems.aspx
+
+http://www.prodimex.ch/pInfos.aspx?CODE=ZYX-2524 
+compatibility list des clé 3g, le modèle de la permanence E180 est indiqué comme compatible
+http://www.zyxel.ch/knowledgebase/3096.html
+
+PDF Facturation pour ASVB :
+**************************
+Password 20asbvnyon10 
+
+EMAIl ASVB  : asbv.nyon@gmail.com et le password asbvnyon2010
+***********
+
+Password for  the  root of  mysql  :  more4less 
+***********************************
+Restore de la base --> 
+- vous pouvez restaurer la base lasbv_transport_local à l'aide du fichier asbv_transport_local.sql qui contient la structure et
+quelques données ou alors utiliser construct_db.sql que représente que la structure de la base.
+ Le schéma MySQL Workbench est également joint sous le nom schema.mwb
+
+
+Directory  for the  package :   c:/ASBV/xampp
+****************************
+
+
+Application Login :
+*****************
+
+Les logins sont la première lettre du prénom suivie du nom de famille et le mot de passe les initiales de la personne.
+Chaque bénévole ayant le statut de permanencier peut se connecter au système.
+Je vous invite à utiliser le login de M. Saint (login:rsaint psswd:rs) avec lequel vous allez pouvoir modifier vos
+propres accès pour bénéficier de la totalité des fonctions.
+
+Directory structure  in c:/ASVB/TransportASVB
+*********************************************
+
+•	le dossier admin contient les différentes classes.
+o	le principe est toujours le même, si un id existant dans la DB est passé au constructeur l'objet est monté à l'aide des données de la base, sinon une nouvelle entrée est crée.
+o	glm est le modèle de calcul/ranking. Il se base sur les distances entre le point départ et le domicile du transporteur potentiel, les habitudes entre passager-transporteur, la distance parcourue ainsi que le nombre de trajets depuis le début de mois
+o	un bénévole peut faire partie de plusieurs filiales avec des droits différents. Vous trouverez donc un super id et un id de filiale. Des fonctions statiques ont été programmées pour passer facilement de l'un à l'autre.
+•	le dossier website contient le site web et le sous-dossier processing qui effectue les traitements selon le module (transporteur, bénévole, passager, filiale etc) et l'action (ajouter, retirer une disponibilité etc.) concernés en faisant appel aux fonctions des différentes classes.
+•	chaque lien, formulaire déclenchent le rechargement d'index.php qui va s'occuper de rediriger et de charger le contenu approprié à l'aide des modules et des actions possibles, par exemple : module=benevole action=list.
+•	le code xHTML est produit à l'aide de fonctions statiques directement implémentées dans les différents classes sous le nom form_xxx.
+
+
+
+
+XAMPP Package    1.7.3    http://sourceforge.net/projects/xampp/
+************************
+
+    * Apache 2.2.14 (IPv6 enabled) + OpenSSL 0.9.8l
+    * MySQL 5.1.41 + PBXT engine
+    * PHP 5.3.1
+    * phpMyAdmin 3.2.4
+    * Perl 5.10.1
+    * FileZilla FTP Server 0.9.33
+    * Mercury Mail Transport System 4.72
+
+TCPDF http://sourceforge.net/projects/tcpdf/  :  http://sourceforge.net/projects/tcpdf/files/
+********************************************
+
+
+Google Map Access :
+******************
+
+http://maps.google.com/maps/api/directions/xml?language=fr&origin=au+village,+le+vaud,+Suisse&destination=Rue+du+Bugnon+46,+Lausanne,+Suisse&sensor=false
+
+Dirigiez-vous tout en bas du fichier xml et vous allez tomber sur : 
+<start_address>Au Village, 1552 Trey, Suisse</start_address>
+<end_address>Rue du Bugnon 46, 1011 Lausanne, Suisse</end_address>
+
+il suffit donc donc de s'assurer que start_adresse contient bien la ville sur laquelle repose la query, idem pour la destination.
+
+voici maintenant le fichier basé sur une adresse qui n'existe pas : http://maps.google.com/maps/api/directions/xml?language=fr&origin=chemin+des+petits+lutins+18,+le+vaud,+Suisse&destination=Rue+du+Bugnon+46,+Lausanne,+Suisse&sensor=false
+
+
+
+Contact  avec  Informatique de ASVAD
+************************************
+
+
+Pour la suite du sujet mentionné ci-dessous, vous pouvez prendre contact la semaine prochaine à M Nicolas Eracle, manager du groupe SIG - système d'information de gestion. M Eracle connaît le dossier et peut vous conseiller pour la suite et/ou déclencher les actions nécessaires pour passer en mode réalisation dès que vous aurez pris votre décision.
+ 
+Voici les coordonnées de M Eracle : 021 623 3925 ou nicolas.eracle@avasad.ch
+ 
+Meilleures salutations
+ 
+AVASAD - Association Vaudoise d'Aide et de Soins à Domicile
+Olivier Baillod
+Directeur
+Service des systèmes d'information et télécommunication
+Route de Chavannes 37
+1014 Lausanne
+prof : +41 21 623 3625
+mobile : +41 79 895 1657
+olivier.baillod@avasad.ch
+
+Loi sur la protection des donnees : http://www.rsv.vd.ch/dire-cocoon/rsv_site/doc.fo.html?docId=584257
+
+Contact avec  Eracle le  12 Jan 2011  :

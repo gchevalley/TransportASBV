@@ -1,0 +1,31 @@
+<?php
+
+require_once( str_replace ( '\\', '/', dirname(dirname(__FILE__))) . '/config/PHPMailer/class.phpmailer.php' );
+
+
+$text_base = 'Chère Madame Baudet, un trasport déjà attribué vient d\'être modifié. Il s\'agit de : Chère Madame Baudet, un trasport déjà attribué vient d\'être modifié. Il s\'agit de : Chère Madame Baudet, un trasport déjà attribué vient d\'être modifié. Il s\'agit de :';
+
+$html_email = '<p>Chère Madame Baudet, un trasport déjà attribué vient d\'être modifié. Il s\'agit de :</p>';
+	$html_email .= $html_email;
+	$html_email .= $html_email;
+
+$email_from = 'gchevalley@exchangebootcamp.local';
+$email_from = 'asbv.nyon@avasad.ch';
+$email_to = 'sborel@exchangebootcamp.local';
+$email_to = 'mthevoz@gmail.com';
+
+
+$mail = new PHPMailer;
+$mail->IsSMTP();
+$mail->Host = '192.168.56.200';
+$mail->Host = 'vrelay.prod.omsv.ch';
+$mail->From = $email_from;
+$mail->FromName = 'GC auto-email';
+$mail->AddAddress($email_to);
+$mail->AddReplyTo($email_from, 'reply-to');
+$mail->WordWrap = 50;
+$mail->IsHTML(true);
+$mail->Subject = 'Nouveau transport';
+$mail->Body    = utf8_decode($html_email);
+$mail->AltBody = $text_base;
+$mail->Send();

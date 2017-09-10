@@ -1,0 +1,10 @@
+$_SESSION['benevole']['auth_status']
+						($_SESSION['benevole']['id'])
+$_SESSION['benevole']['super_login']
+$_SESSION['benevole']['nom']
+$_SESSION['benevole']['prenom']
+$_SESSION['benevole']['id_benevole_filiale']
+$_SESSION['benevole']['is_administrateur_filiale'] 0/1
+
+$_SESSION['filiale']['id']
+$_SESSION['filiale']['nom']

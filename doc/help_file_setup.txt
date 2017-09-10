@@ -1,0 +1,92 @@
+Documentation pour le help integre
+**********************************
+
+
+Vous trouverez ces zones dans les fonctions static qui produisent le code HTML commençant par "form_"
+
+Exemple dans la class transport, la fonction form_base contient :
+
+-> pour faire apparaître le lien :
+$html_code .= '<p class="show_help">';
+            $html_code .= '<a class="show_help" href="">';
+                $html_code .= '<img src="./img/help.png" />';
+                $html_code .= 'Afficher l\'aide';
+            $html_code .= '</a>';
+        $html_code .= '</p>';
+
+
+et tout en bas de la fonction une fois le form fermé, le code qui doit être mounté dans la boîte de dialogue qui saute au premier plan :
+
+$html_code .= '<div class="hide" id="help">';
+            
+           <code html >
+            
+        $html_code .= '</div>';
+
+Les  help files par topic doivent s gerer de la facon suivante :
+
+1) Editer le fichier  topics.list.php  dans le directory  c:/ASBV/TransportASBV/admin/help/ 
+   ajouter  une ligne pour referencer un nouveau pointeur d'aide.
+ 
+   EX: Topic::$list_topics[] = new Topic('backup_procedures.html', 'Procedures de sauvetage', 'Backup'); 
+   Le fichier backup_procedures.html peut etre une extension .htm ou .html  ou .txt
+   Les  fichiers contenant du code HTML seront converties au format utf-8 et les balises  avant et apres  body seront supprimmees automatiquement lors de l'affichage
+   De ce fait le fichier help peut etre maintenu par Front Page ou autre editeur HTML et stocke comme document complet.
+
+2) Creer le fichier de help references sous 1) avec un editeur HTML et stocker sous c:/ASBV/TransportASBV/doc/help/ dans le format de votre choix  .html .htm  .txt
+
+3) Les  images dans le help file  sont stockees  sous c:/ASBV/TransportASBV/website/img et  le pointeur  src  mentionnera  =./img/.....
+
+
+
+Fichier  de reference pour les pointeurs de la page mode d'emploi 
+
+<?php
+/*
+ Liste des  pages modes d'emploi disponibles 
+
+ Mises a jour :  2 Mars 2011
+ Auteur       :  Michel Thevoz 
+ Fichier      :  C:/ASBV/TransportASBV/admin/help/topics.list.php 
+ URL          :  http://localhost/TransportASBV/website/index.php?module=help&action=list_topic
+*/
+
+Topic::$list_topics[] = new Topic('website_processing_dashboard.html', 'Page d\'Accueil', 'Acceuil & Divers');
+
+
+Topic::$list_topics[] = new Topic('Help_Nouveau_Transport.html', 'Ajouter un nouveau transport', 'Transport');
+Topic::$list_topics[] = new Topic('Help_Liste_Transport.html', 'Liste des transports', 'Transport');
+Topic::$list_topics[] = new Topic('Help_Archives_Transport.html', 'Archives des transports', 'Transport');
+
+Topic::$list_topics[] = new Topic('Help_Nouveau_Lieu.html', 'Ajouter un nouveau lieu', 'Lieux');
+Topic::$list_topics[] = new Topic('Help_Liste_Lieu.html', 'Liste des lieux', 'Lieux');
+
+ 
+Topic::$list_topics[] = new Topic('Help_Nouveau_Passager.html', 'Ajouter un nouveau passager', 'Passagers');
+Topic::$list_topics[] = new Topic('Help_Liste_Passager.html', 'Liste des passagers', 'Passagers');
+Topic::$list_topics[] = new Topic('Help_Tarifs_Passager.html', 'Calcul des tarifs passagers', 'Passagers');
+
+Topic::$list_topics[] = new Topic('Help_Nouveau_Benevole.html', 'Ajouter un nouveau chauffeur bénévole', 'Bénévoles');
+Topic::$list_topics[] = new Topic('Help_Liste_Benevole.html', 'Liste des chauffeurs bénévoles', 'Bénévoles');
+
+Topic::$list_topics[] = new Topic('Help_Permanence_Filiale.html', 'Affichage des permanenciers', 'Filiale');
+Topic::$list_topics[] = new Topic('Help_Facturation_Filiale.html', 'Facturation des transports', 'Filiale');
+Topic::$list_topics[] = new Topic('Help_Backup_procedures.html', 'Procedures de sauvetage et restauration', 'Filiale');
+Topic::$list_topics[] = new Topic('Help_Editer_Filiale.html', 'Modification des paramètres de la filiale', 'Filiale');
+Topic::$list_topics[] = new Topic('Help_Admin_Filiale.html', 'Administration de la filiale', 'Filiale');
+Topic::$list_topics[] = new Topic('Help_Ajouter_Filiale.html', 'Ajouter une nouvelle filiale', 'Filiale');
+
+Topic::$list_topics[] = new Topic('Help_Suggestion_Chauffeur_A.html', 'La demande de transport', 'Suggestion de chauffeur');
+Topic::$list_topics[] = new Topic('Help_Suggestion_Chauffeur_B.html', 'Les Filtres ', 'Suggestion de chauffeur');
+Topic::$list_topics[] = new Topic('Help_Suggestion_Chauffeur_C.html', 'Extraction et Normalisation', 'Suggestion de chauffeur');
+Topic::$list_topics[] = new Topic('Help_Suggestion_Chauffeur_D.html', 'Moyennes pondérées', 'Suggestion de chauffeur');
+
+
+Topic::$list_topics[] = new Topic('Help_FAQ.html', 'Questions Fréquentes', 'Recommendations et conseils');
+Topic::$list_topics[] = new Topic('Help_startup.html', 'Démarrage du système', 'Recommendations et conseils');
+Topic::$list_topics[] = new Topic('Help_shutdown.html', 'Arrêt du système', 'Recommendations et conseils');
+Topic::$list_topics[] = new Topic('Help_email.html', 'Accès au courrier électronique', 'Recommendations et conseils');
+Topic::$list_topics[] = new Topic('Help_internet.html', 'Controle de la connection Internet', 'Recommendations et conseils');
+Topic::$list_topics[] = new Topic('Help_support.html', 'Contact pour le support ', 'Recommendations et conseils');
+
+?>

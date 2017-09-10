@@ -1,0 +1,20 @@
+Installation du PC ASVB
+***********************
+
+Voir liste_package.txt pour les URL specifiques 
+
+ 1) Norton  Internet  Security
+ 2) Acorbat  mise a jour 
+ 3) De-installer  Office 
+ 4) COmpte  Norton  asbv.nyon@gmail.com   asbvnyon2010  ( Password )
+ 5) xammp 32 bit  binary  Opensource ( configurer php mail apache voir installation.txt  )
+ 6) Windows Live ( optional )
+ 7) Install notepad +
+ 8) SQL front 
+ 9) TCPDF et  PHP Excel 
+10) Editplus en option 
+11) 7 ZIP pour le restore 
+12) Remote desktop ou VNC pour telemaintenance
+13) 
+14) 
+

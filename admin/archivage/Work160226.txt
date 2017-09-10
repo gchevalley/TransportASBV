@@ -1,0 +1,27 @@
+# 12 097 transport a historiser / 23 739
+
+select transport.*
+from transport
+where transport.insert_date < '2014-01-01'
+
+
+12 097 
+
+SELECT transport_transporteur.*,  transport.*
+FROM transport LEFT JOIN transport_transporteur
+on transport.id = transport_transporteur.id_transport
+where transport.insert_date < '2014-01-01'
+
+
+DELETE 
+FROM transport_transporteur
+WHERE id_transport IN (SELECT id FROM transport WHERE insert_date < '2014-01-01')
+
+
+jchabloz md5(jc) =>	b7adde8a9eec8ce92b5ee0507ce054a4 casser
+			b7adde8a9eec8ce92b5ee0507ce054a4 => apres reset
+
+			b7adde8a9eec8ce92b5ee0507ce054a4
+
+			0b7cc8c8d184526d6196aa0ef0619d36
+
