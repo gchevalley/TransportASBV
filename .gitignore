@@ -7,5 +7,9 @@
 
 /extract/
 !/extract/.gitkeep
+
+/listing/
+!/listing/.gitkeep
+
 /facturation/
 /listing/
