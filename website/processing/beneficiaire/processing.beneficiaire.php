@@ -8,6 +8,10 @@ if ( array_key_exists('id', $_POST) ) {
 	$variables_to_clean['id'] = array('value' => $_POST['id'], 'type' => 'id', 'class' => 'beneficiaire');
 }
 
+if ( array_key_exists('is_active', $_POST) ) {
+	$variables_to_clean['is_active'] = array('value' => $_POST['is_active'], 'type' => 'bool', 'class' => 'beneficiaire');
+}
+
 if ( array_key_exists('titre', $_POST) ) {
 	$variables_to_clean['titre'] = array('value' => $_POST['titre'], 'type' => 'text', 'sub_type' => 'nom', 'option' => array('required' => TRUE), 'class' => 'beneficiaire');
 }
@@ -85,14 +89,17 @@ if ( array_key_exists('autre_adresse_facturation', $_POST) ) {
 if ( array_key_exists('repondant_id', $_POST) ) {
 	$variables_to_clean['repondant']['id'] = array('value' => $_POST['repondant_id'], 'type' => 'id');
 	$variables_to_clean['repondant']['lien_beneficiaire'] = array('value' => $_POST['repondant_lien_beneficiaire'], 'type' => 'text');
-	$variables_to_clean['repondant']['id_categorie'] = array('value' => $_POST['repondant_id_categorie'], 'type' => 'id');
 
-		$tmp_repondant_categorie = new Repondant_Categorie($variables_to_clean['repondant']['id_categorie']['value']);
+	if ( array_key_exists('repondant_id_categorie', $_POST) ) {
+		$variables_to_clean['repondant']['id_categorie'] = array('value' => $_POST['repondant_id_categorie'], 'type' => 'id');
 
-		if ($tmp_repondant_categorie->is_auto_mount()) {
-			$table = stripAccents(strtolower($tmp_repondant_categorie->get_nom()));
-			$variables_to_clean['repondant']['ref_external'] = array('value' => $_POST['repondant_ref_external_' . $table], 'type' => 'id');
-		}
+			$tmp_repondant_categorie = new Repondant_Categorie($variables_to_clean['repondant']['id_categorie']['value']);
+
+			if ($tmp_repondant_categorie->is_auto_mount()) {
+				$table = stripAccents(strtolower($tmp_repondant_categorie->get_nom()));
+				$variables_to_clean['repondant']['ref_external'] = array('value' => $_POST['repondant_ref_external_' . $table], 'type' => 'id');
+			}
+	}
 
 	$variables_to_clean['repondant']['nom'] = array('value' => ucfirst($_POST['repondant_nom']), 'type' => 'text', 'sub_type' => 'nom');
 	$variables_to_clean['repondant']['prenom'] = array('value' => ucfirst($_POST['repondant_prenom']), 'type' => 'text', 'sub_type' => 'nom');
@@ -177,7 +184,7 @@ switch ($action) {
 				unset($data_to_display['id']);
 
 				foreach ($data_to_display as $index => $row) {
-					if ($row['class'] == 'beneficiaire') {
+					if ( isset($row['class']) && $row['class'] == 'beneficiaire' ) {
 						$attr[]= $index;
 						$new_value[]= $row['value'];
 					}
@@ -222,7 +229,12 @@ switch ($action) {
 		break;
 
 	case "list":
-		echo Beneficiaire::form('list');
+
+		if ( isset($sub_module) == FALSE ) {
+			echo Beneficiaire::form('list');
+		} else {
+			echo Beneficiaire::form('list_alpha', array($sub_module) );
+		}
 		break;
 
 	case "new_transport":

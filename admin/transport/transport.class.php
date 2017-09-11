@@ -2092,7 +2092,7 @@ class Transport {
 
 					$html_code .= '<label for="id_beneficiaire">Passager</label>';
 
-					$sql = "SELECT id, nom, prenom FROM beneficiaire ORDER BY nom";
+					$sql = "SELECT id, nom, prenom FROM beneficiaire WHERE is_active=1 ORDER BY nom";
 					$sth = $dbh->query($sql);
 					$result = $sth->fetchAll(PDO::FETCH_ASSOC);
 

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 13, 2011 at 11:26 
+-- Generation Time: Jan 13, 2011 at 11:26
 -- Server version: 5.1.41
 -- PHP Version: 5.3.1
 
@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `archive_transporteur_non_disponibilite_date` (
 DROP TABLE IF EXISTS `beneficiaire`;
 CREATE TABLE IF NOT EXISTS `beneficiaire` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `titre` varchar(25) NOT NULL,
   `nom` varchar(45) NOT NULL,
   `prenom` varchar(45) NOT NULL,

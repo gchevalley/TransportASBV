@@ -1172,6 +1172,7 @@ class Benevole implements Contact {
 
 				$html_code .= '<p>';
 					$html_code .= '<label for="is_active">Actif</label>';
+					$html_code .= '<input type="hidden" value="0" name="is_active">';
 					if ( isset($data_to_display['is_active']['value']) ) {
 						$html_code .= add_FormElement_input('checkbox', 'is_active', '',  $data_to_display['is_active']['value']);
 					} else {
@@ -1323,6 +1324,7 @@ class Benevole implements Contact {
 
 				$html_code .= '<p>';
 					$html_code .= '<label for="is_permanencier">Permanencier</label>';
+					$html_code .= '<input type="hidden" value="0" name="is_permanencier">';
 					if ( isset($data_to_display['is_permanencier']['value']) ) {
 						$html_code .= add_FormElement_input('checkbox', 'is_permanencier', '',  $data_to_display['is_permanencier']['value']);
 					} else {
@@ -1339,6 +1341,7 @@ class Benevole implements Contact {
 
 				$html_code .= '<p>';
 					$html_code .= '<label for="is_transporteur">Transporteur</label>';
+					$html_code .= '<input type="hidden" value="0" name="is_transporteur">';
 					if ( isset($data_to_display['is_transporteur']['value']) ) {
 						$html_code .= add_FormElement_input('checkbox', 'is_transporteur', '',  $data_to_display['is_transporteur']['value']);
 					} else {
@@ -1363,6 +1366,7 @@ class Benevole implements Contact {
 					$html_code .= '<ul>';
 						$html_code .= '<li>';
 							$html_code .= '<label for="do_transport_locaux">Transports locaux</label>';
+							$html_code .= '<input type="hidden" value="0" name="do_transports_locaux">';
 							if ( isset($data_to_display['do_transports_locaux']['value']) ) {
 								$html_code .= add_FormElement_input('checkbox', 'do_transports_locaux', '',  $data_to_display['do_transports_locaux']['value']);
 							} else {
@@ -1372,6 +1376,7 @@ class Benevole implements Contact {
 
 						$html_code .= '<li>';
 							$html_code .= '<label for="do_transport_geneve">Transports Genève</label>';
+							$html_code .= '<input type="hidden" value="0" name="do_transports_geneve">';
 							if ( isset($data_to_display['do_transports_geneve']['value']) ) {
 								$html_code .= add_FormElement_input('checkbox', 'do_transports_geneve', '',  $data_to_display['do_transports_geneve']['value']);
 							} else {
@@ -1381,6 +1386,7 @@ class Benevole implements Contact {
 
 						$html_code .= '<li>';
 							$html_code .= '<label for="do_transport_lausanne">Transports Lausanne</label>';
+							$html_code .= '<input type="hidden" value="0" name="do_transports_lausanne">';
 							if ( isset($data_to_display['do_transports_lausanne']['value']) ) {
 								$html_code .= add_FormElement_input('checkbox', 'do_transports_lausanne', '',  $data_to_display['do_transports_lausanne']['value']);
 							} else {
@@ -1390,6 +1396,7 @@ class Benevole implements Contact {
 
 						$html_code .= '<li>';
 							$html_code .= '<label for="do_transport_holidays">Transports pendant les vacances</label>';
+							$html_code .= '<input type="hidden" value="0" name="do_transports_holidays">';
 							if ( isset($data_to_display['do_transports_holidays']['value']) ) {
 								$html_code .= add_FormElement_input('checkbox', 'do_transports_holidays', '',  $data_to_display['do_transports_holidays']['value']);
 							} else {
@@ -1402,6 +1409,7 @@ class Benevole implements Contact {
 				if ($action == 'add' || $tmp_benevole->checkIsSuperAdmin() || $tmp_benevole->checkIsAdminOfFiliale($_SESSION['filiale']['id'])) {
 					$html_code .= '<p>';
 						$html_code .= '<label for="is_administrateur_filiale">Administrateur de filiale</label>';
+						$html_code .= '<input type="hidden" value="0" name="is_administrateur_filiale">';
 						if ( isset($data_to_display['is_administrateur_filiale']['value']) ) {
 							$html_code .= add_FormElement_input('checkbox', 'is_administrateur_filiale', '',  $data_to_display['is_administrateur_filiale']['value']);
 						} else {
@@ -1411,6 +1419,7 @@ class Benevole implements Contact {
 
 					$html_code .= '<p>';
 						$html_code .= '<label for="has_external_login">Login externe possible</label>';
+						$html_code .= '<input type="hidden" value="0" name="has_external_login">';
 						if ( isset($data_to_display['has_external_login']['value']) ) {
 							$html_code .= add_FormElement_input('checkbox', 'has_external_login', '',  $data_to_display['has_external_login']['value']);
 						} else {
@@ -1503,6 +1512,7 @@ class Benevole implements Contact {
 
 					$html_code .= '<p>';
 						$html_code .= '<label for="is_super_admin">Super-Administrateur</label>';
+						$html_code .= '<input type="hidden" value="0" name="is_super_admin">';
 						if ( isset($data_to_display['is_super_admin']['value']) ) {
 							$html_code .= add_FormElement_input('checkbox', 'is_super_admin', '',  $data_to_display['is_super_admin']['value']);
 						} else {

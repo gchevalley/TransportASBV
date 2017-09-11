@@ -585,6 +585,7 @@ class Lieu implements Contact {
 
 				$html_code .= '<p>';
 					$html_code .= '<label for ="numero_important">Numéro important ?</label>';
+					$html_code .= '<input type="hidden" value="0" name="numero_important">';
 					if ( isset($data_to_display['numero_important']['value']) ) {
 						$html_code .= add_FormElement_input('checkbox', 'numero_important', '', $data_to_display['numero_important']['value']);
 					} else {

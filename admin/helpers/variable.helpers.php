@@ -12,13 +12,14 @@ function clean_variables($variables_to_clean) {
 	}
 
 	foreach ($variables_to_clean as $index => &$variable) {
+		
 		if (isset($variable['value']) && $variable['value'] != '') {
 			if ( isset($variable['sub_type']) ) {
 				$variable['value'] = clean_variable($variable['value'], $variable['type'], $variable['sub_type']);
 			} else {
 				$variable['value'] = clean_variable($variable['value'], $variable['type'], '');
 			}
-		} elseif ($variable['type']=='bool') {
+		} elseif ( isset($variable['type']) && $variable['type']=='bool') {
 			$variable['value'] = 0;
 		} else {
 			if (isset($variable['option']['required'])) {

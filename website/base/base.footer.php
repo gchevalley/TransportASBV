@@ -21,7 +21,10 @@
  * preporocessing: re-ecriture des fichiers pour mieux traiter les variables non definies
  * preprocessing: 2 branches: add & new au lieu d une
  * forms addnew/edit: re-ecriture des forms pour mieux traiter les variables non definies
- *
+ * db_structure: ALTER TABLE `beneficiaire` ADD `is_active` TINYINT(1) NOT NULL DEFAULT '1' AFTER `id`;
+ * transport: ne plus proposer les passagers flaggue inactifs
+ * (undetected bug) add hidden field for unchecked checkbox
+ * passager: separer par premiere liste, ne plus afficher une liste integrale
  *
  *
  *

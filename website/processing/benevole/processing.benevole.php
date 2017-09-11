@@ -120,7 +120,13 @@ if ( array_key_exists('is_transporteur', $_POST) ) {
 		$variables_to_clean['do_transports_geneve'] = array('value' => $_POST['do_transports_geneve'], 'type' => 'bool', 'class' => 'benevole_participation_filiale');
 		$variables_to_clean['do_transports_lausanne'] = array('value' => $_POST['do_transports_lausanne'], 'type' => 'bool', 'class' => 'benevole_participation_filiale');
 		$variables_to_clean['do_transports_holidays'] = array('value' => $_POST['do_transports_holidays'], 'type' => 'bool', 'class' => 'benevole_participation_filiale');
+}
+
+if ( array_key_exists('is_administrateur_filiale', $_POST) ) {
 	$variables_to_clean['is_administrateur_filiale'] = array('value' => $_POST['is_administrateur_filiale'], 'type' => 'bool', 'class' => 'benevole_participation_filiale');
+}
+
+if ( array_key_exists('has_external_login', $_POST) ) {
 	$variables_to_clean['has_external_login'] = array('value' => $_POST['has_external_login'], 'type' => 'bool', 'class' => 'benevole_participation_filiale');
 }
 
@@ -141,7 +147,7 @@ foreach ($categorie_dispo_array as $index => $categorie_dispo) {
 	for ($i=1; $i<=7; $i++) {
 		for ($j=1; $j<=3; $j++) {
 
-			if ( array_key_exists('dispo_' . $categorie_dispo .'-jour_' . $i. '-periode_' . $j, $variables_to_clean) ) {
+			if ( array_key_exists('dispo_' . $categorie_dispo .'-jour_' . $i. '-periode_' . $j, $_POST) ) {
 				$variables_to_clean['dispo_' . $categorie_dispo . '-jour_' . $i. '-periode_' . $j] = array('value' => $_POST['dispo_' . $categorie_dispo .'-jour_' . $i. '-periode_' . $j], 'type' => 'bool', 'nom_categorie' => $categorie_dispo , 'id_categorie' => $categorie_dispo_id_array[$index], 'id_jour_semaine' => $i, 'id_periode_journee' => $j, 'class' => 'benevole_disponibilite_standard');
 			}
 		}
@@ -181,7 +187,7 @@ switch ($action) {
 
 	case "edit":
 
-		if ( isset($_GET['id']) ) {
+		if ( count($variables_to_clean[0]) == 0 && isset($_GET['id']) ) {
 			echo Benevole::form('edit', new Benevole(Benevole::get_super_id_benvole_from_id_benevole_filiale($_GET['id'])));
 			break;
 		}
@@ -217,10 +223,10 @@ switch ($action) {
 
 						//repartition des donnees
 						foreach ($data_to_display as $index => $row) {
-							if ($row['class'] == 'benevole') {
+							if ( isset($row['class']) && $row['class'] == 'benevole' ) {
 								$attr_benevole[] = $index;
 								$new_value_benevole[] = $row['value'];
-							} elseif ($row['class'] == 'benevole_participation_filiale') {
+							} elseif ( isset($row['class']) && $row['class'] == 'benevole_participation_filiale' ) {
 								$attr_benevole_participation_filiale[] = $index;
 								$new_value_benevole_participation_filiale[] = $row['value'];
 							}
@@ -238,7 +244,7 @@ switch ($action) {
 						}
 
 						foreach($data_to_display as $row) {
-							if ($row['class'] == 'benevole_disponibilite_standard' && isset($row['id_categorie']) && isset($row['id_jour_semaine']) && isset($row['id_periode_journee'])) {
+							if ( isset($row['class']) && $row['class'] == 'benevole_disponibilite_standard' && isset($row['id_categorie']) && isset($row['id_jour_semaine']) && isset($row['id_periode_journee'])) {
 								$array_disponibilite_benevole[] = array('value' => $row['value'], 'id_categorie' => $row['id_categorie'], 'id_jour_semaine' => $row['id_jour_semaine'], 'id_periode_journee' => $row['id_periode_journee']);
 							}
 						}

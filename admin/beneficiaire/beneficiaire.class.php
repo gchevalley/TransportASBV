@@ -41,6 +41,7 @@ load_class_and_interface(array('Contact', 'Benevole'));
 class Beneficiaire implements Contact {
 
 	private $id = 0;
+	private $is_active = 1;
 	private $titre = '';
 	private $nom_complet = array();
 	private $nom = '';
@@ -142,6 +143,7 @@ class Beneficiaire implements Contact {
 		 * (argument après $this->)
 		 */
 		$this->titre = $result['titre'];
+		$this->is_active = $result['is_active'];
 		$this->nom = $result['nom'];
 		$this->prenom = $result['prenom'];
 		$this->adresse = $result['adresse'];
@@ -663,6 +665,7 @@ class Beneficiaire implements Contact {
 	private function return_pair_key_value() {
 
 		$tmp_array['id']['value']= $this->id;
+		$tmp_array['is_active']['value']= $this->is_active;
 		$tmp_array['titre']['value']= $this->titre;
 		$tmp_array['nom']['value']= $this->nom;
 		$tmp_array['prenom']['value']= $this->prenom;
@@ -810,6 +813,9 @@ class Beneficiaire implements Contact {
 			case "list":
 				echo Beneficiaire::form_list($action);
 				break;
+			case "list_alpha":
+				echo Beneficiaire::form_list_alpha($action, $data_to_display[0]);
+				break;
 			case "tarif":
 				echo Beneficiaire::form_tarif($action, $data_to_display);
 				break;
@@ -855,6 +861,17 @@ class Beneficiaire implements Contact {
 		$html_code .= '<form class="disable_submit_form" id="beneficiaire_' . $action . '" action="" method="post">';
 			$html_code .= '<fieldset id="beneficiaire_identite">';
 				$html_code .= '<legend>Identité</legend>';
+
+
+				$html_code .= '<p>';
+					$html_code .= '<label for="is_active">Actif</label>';
+					$html_code .= '<input type="hidden" value="0" name="is_active">';
+					if ( isset($data_to_display['is_active']['value']) ) {
+						$html_code .= add_FormElement_input('checkbox', 'is_active', '',  $data_to_display['is_active']['value']);
+					} else {
+						$html_code .= add_FormElement_input('checkbox', 'is_active', '',  '');
+					}
+				$html_code .= '</p>';
 
 				$html_code .= '<p>';
 
@@ -1062,6 +1079,7 @@ class Beneficiaire implements Contact {
 
 				$html_code .= '<p>';
 					$html_code .= '<label for="toujours_2">Se déplace avec son épous(e)</label>';
+					$html_code .= '<input type="hidden" value="0" name="toujours_2">';
 					if ( isset($data_to_display['toujours_2']['value']) ) {
 						$html_code .= add_FormElement_input('checkbox', 'toujours_2', '',  $data_to_display['toujours_2']['value']);
 					} else {
@@ -1313,7 +1331,74 @@ class Beneficiaire implements Contact {
 			$sql .= " OR ville LIKE '%" . $_POST['search'] . "%'";
 			$sql .= " ORDER BY nom";
 		} else {
-			$sql = "SELECT * FROM beneficiaire ORDER BY nom";
+			$sql = "SELECT DISTINCT LEFT(ucase(NOM),1) AS letter FROM `beneficiaire` ORDER BY LEFT(ucase(NOM),1)";
+		}
+
+		$sth = $dbh->query($sql);
+		$result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+
+		$html_code = '';
+
+		//charge le help si existant
+		if (get_file_help_path(__FILE__, $action)) {
+			//charge le lien pour afficher l'aide
+			$html_code .= show_help_link();
+		}
+
+		$html_code .= '<form id="beneficiaire_seach_list"  action="" method="post">';
+			$html_code .= '<p>';
+				$html_code .= '<input type="text" id="search" name="search" />';
+
+				$html_code .= add_FormElement_input('hidden', 'form', '', 'search');
+				$html_code .= add_FormElement_input('hidden', 'module', '', 'beneficiaire');
+				$html_code .= add_FormElement_input('hidden', 'sub_module', '', '""');
+				$html_code .= add_FormElement_input('hidden', 'action', '', 'list');
+
+				$html_code .= '<input type="submit" value="Soumettre" />';
+
+			$html_code .= '</p>';
+
+			$html_code .= '<p>';
+				$html_code .= '<a href="?module=beneficiaire&amp;action=add">Nouveau passager</a>';
+			$html_code .= '</p>';
+		$html_code .= '</form>';
+
+		$html_code .= '<p>';
+			$alpha_letter = array();
+/*
+			foreach ($result as $row) {
+				if (!in_array(mb_strtoupper(stripAccents(substr($row['nom'], 0, 1))), $alpha_letter)) {
+					$alpha_letter[] = mb_strtoupper(stripAccents(substr($row['nom'], 0, 1)));
+				}
+			}
+			*/
+
+			foreach ($result as $row) {
+				$html_code .= '<a href="?module=beneficiaire&amp;action=list&amp;sub_module=' . $row['letter'] . '">' . $row['letter'] . '</a> | ';
+			}
+
+		$html_code .= '</p>';
+
+	$html_code .= load_help_file_if_necessary(get_file_help_path(__FILE__, $action));
+
+	return $html_code;
+
+	} //class.Beneficiaire.form.list
+
+
+	private static function form_list_alpha($action, $letter) {
+		//unset($_POST);
+		global $dbh;
+
+		if (isset($_POST['search'])) {
+			$sql = "SELECT * FROM beneficiaire ";
+			$sql .= " WHERE nom LIKE '%" . $_POST['search'] . "%'";
+			$sql .= " OR prenom LIKE '%" . $_POST['search'] . "%'";
+			$sql .= " OR ville LIKE '%" . $_POST['search'] . "%'";
+			$sql .= " ORDER BY nom";
+		} else {
+			$sql = "SELECT * FROM beneficiaire WHERE LEFT(UCASE(nom),1)='" . $letter . "' ORDER BY nom";
 		}
 
 		$sth = $dbh->query($sql);
@@ -1349,14 +1434,11 @@ class Beneficiaire implements Contact {
 		$html_code .= '<p>';
 			$alpha_letter = array();
 
-			foreach ($result as $row) {
-				if (!in_array(mb_strtoupper(stripAccents(substr($row['nom'], 0, 1))), $alpha_letter)) {
-					$alpha_letter[] = mb_strtoupper(stripAccents(substr($row['nom'], 0, 1)));
-				}
-			}
-
-			foreach ($alpha_letter as $letter) {
-				$html_code .= '<a href="#' . $letter . '">' . $letter . '</a> | ';
+			$sql_letter = "SELECT DISTINCT LEFT(ucase(NOM),1) AS letter FROM `beneficiaire` ORDER BY LEFT(ucase(NOM),1)";
+			$sth_letter = $dbh->query($sql_letter);
+			$result_letter = $sth_letter->fetchAll(PDO::FETCH_ASSOC);
+			foreach ($result_letter as $row) {
+				$html_code .= '<a href="?module=beneficiaire&amp;action=list&amp;sub_module=' . $row['letter'] . '">' . $row['letter'] . '</a> | ';
 			}
 
 		$html_code .= '</p>';
@@ -1381,18 +1463,6 @@ class Beneficiaire implements Contact {
 
 			foreach ($result as $row) {
 
-				//Rajoute une ligne HEAD avec la premiere lettre du nom pour les regroupement
-				if (mb_strtoupper(stripAccents($last_letter)) <> mb_strtoupper(stripAccents(substr($row['nom'], 0, 1)))) {
-
-					$last_letter = mb_strtoupper(stripAccents(substr($row['nom'], 0, 1)));
-
-						$html_code .= '<tr>';
-							$html_code .= '<th>';
-								$html_code .= '<a name="' . $last_letter . '"></a><a href="#top">' . $last_letter . '</a>';
-							$html_code .= '</th>';
-						$html_code .= '</tr>';
-				}
-
 				$html_code .= '<tr>';
 
 					$html_code .= '<td><a href="?module=beneficiaire&amp;id=' . $row['id'] . '&amp;action=view">' . $row['nom'] .'</a></td>';
@@ -1411,12 +1481,12 @@ class Beneficiaire implements Contact {
 
 		$html_code .= '</tbody>';
 	$html_code .= '</table>';
-
 	$html_code .= load_help_file_if_necessary(get_file_help_path(__FILE__, $action));
 
 	return $html_code;
 
-	} //class.Beneficiaire.form.list
+} //class.Beneficiaire.form.list_alpha
+
 
 
 	private static function form_view($action, $data_to_display='') {
