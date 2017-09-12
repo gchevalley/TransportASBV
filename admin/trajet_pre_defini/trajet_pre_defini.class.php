@@ -121,6 +121,29 @@ class Trajet_Pre_Defini {
 	} // class.Trajet_Pre_Defini.func.addEntryDB
 
 
+	// $lieu_1 < $lieu_2
+	public static function opti_find_combination($lieu_1, $lieu_2) { //autorise la reception d'un object contact
+
+		global $dbh;
+
+		$lieu_1 = $dbh->quote(mb_strtoupper(stripAccents($lieu_1)));
+		$lieu_2 = $dbh->quote(mb_strtoupper(stripAccents($lieu_2)));
+
+		$sql = "SELECT id, distance FROM trajet_pre_defini ";
+		$sql .= " WHERE lieu_1=" . $lieu_1;
+		$sql .= " AND lieu_2=" .$lieu_2;
+
+		$sth = $dbh->query($sql);
+		$result = $sth->fetch(PDO::FETCH_ASSOC);
+
+		if ($result != false) {
+			return $result;
+		} else {
+			return FALSE;
+		}
+	}
+
+
 
 	public static function find_combination($lieu_1, $lieu_2) { //autorise la reception d'un object contact
 

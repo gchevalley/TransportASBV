@@ -169,7 +169,8 @@ class Transport {
 		}
 
 
-		//calcul des distances
+		//calcul des distances - par defaut rentre dans le constructeur avec $km=0
+		/* decomissione pour se focaliser sur le ville -> ville
 		if ($nbre_kilometres == 0) {
 			$load_needed_class_and_interface = load_class_and_interface(array('Trajet_Pre_Defini', 'Direction'));
 
@@ -203,6 +204,46 @@ class Transport {
 				}
 			}
 		}
+		*/
+
+		// 1. ville->ville, 2. gmaps
+		if ($nbre_kilometres == 0) {
+			$point_depart_ville = mb_strtoupper(stripAccents($point_depart['ville']));
+			$point_arrivee_ville = mb_strtoupper(stripAccents($point_arrivee['ville']));
+
+			if ( $point_depart_ville < $point_arrivee_ville ) {
+				$ville_1 = $point_depart_ville;
+				$ville_2 = $point_arrivee_ville;
+			} else {
+				$ville_1 = $point_arrivee_ville;
+				$ville_2 = $point_depart_ville;
+			}
+
+			$load_needed_class_and_interface = load_class_and_interface(array('Trajet_Pre_Defini'));
+			$distance_trajet_pre_defini = Trajet_Pre_Defini::opti_find_combination($ville_1, $ville_2);
+			if ($distance_trajet_pre_defini && is_numeric($distance_trajet_pre_defini['distance'])) {
+				//echo "found in ville->ville, no google was necessary";
+				$nbre_kilometres = ceil($distance_trajet_pre_defini['distance']);
+			} else {
+				// gmaps + insertion dans trajet predefini
+				//echo "not found in ville->ville, google with google";
+				if (checkInternetConnection('maps.google.com')) {
+					$nbre_kilometres = Trajet_Pre_Defini::download_distance_from_google_maps('', $point_depart['npa'], $point_depart['ville'], $point_depart['pays'], '', $point_arrivee['npa'], $point_arrivee['ville'], $point_arrivee['pays']);
+
+					if ($nbre_kilometres && $nbre_kilometres > 0) {
+						$tmp_trajet_ville_ville = new Trajet_Pre_Defini('new', $ville_1, $ville_2, $nbre_kilometres);
+					}
+
+					$nbre_kilometres = ceil($nbre_kilometres);
+				}
+			}
+
+
+
+		}
+
+
+
 
 		if ($nbre_kilometres === false) {
 			$nbre_kilometres = 0;
