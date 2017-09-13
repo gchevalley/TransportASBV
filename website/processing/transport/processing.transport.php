@@ -288,7 +288,8 @@ switch ($action) {
 
 				unset($_SESSION['last_page']);
 
-				require ('./processing/dashboard.php');
+				//require ('./processing/dashboard.php');
+				echo Transport::form('list');
 
 			} else {
 				echo Transport::form('edit', $data_to_display);

@@ -955,6 +955,11 @@ class Transport {
 				$html_email .= '</tbody>';
 			$html_email .= '</table>';
 
+			$html_email .= '<p>';
+				$html_email .= 'Durée prévue de ';
+					$html_email .= floor($this->duree_approximative)  . 'H' . ($this->duree_approximative-floor($this->duree_approximative));
+			$html_email .= '</p>';
+
 	/*
 	 * Add Info Diverses Field from bénéficiaire if this one exist
 	 * Suppress br  to setup all informations on the same line
@@ -1276,7 +1281,7 @@ class Transport {
 			$mail->AddReplyTo($tmp_filiale->get_email_permanence(), $tmp_filiale->get_nom());
 			$mail->WordWrap = 50;
 			$mail->IsHTML(true);
-			$mail->Subject = utf8_decode('Nouveau transport');
+			$mail->Subject = utf8_decode('Nouveau transport pour ' . format_titre($tmp_beneficiaire_nom_complet['titre']) . ' ' . mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) );
 			$mail->Body    = utf8_decode($html_email);
 			$mail->Send();
 
@@ -2776,6 +2781,7 @@ class Transport {
 				$sql = "SELECT benevole_participation_filiale.id, benevole.nom, benevole.prenom ";
 				$sql .= " FROM benevole_participation_filiale INNER JOIN benevole ON benevole_participation_filiale.id_benevole = benevole.id ";
 				$sql .= " WHERE benevole_participation_filiale.is_transporteur=1";
+				$sql .= " AND benevole_participation_filiale.is_active=1";
 				$sql .= " ORDER BY benevole.nom, benevole.prenom";
 
 				$sth = $dbh->query($sql);
@@ -2863,7 +2869,8 @@ class Transport {
 		$sql .= " FROM transport ";
 		$sql .= " WHERE id_filiale=" . $_SESSION['filiale']['id'];
 		$sql .= " AND is_annule=0";
-		$sql .= " AND date_transport>=" . $dbh->quote(date('Y-m-d', strtotime(date('Y') . '-' . date('m') . '-01')));
+		//$sql .= " AND date_transport>=" . $dbh->quote(date('Y-m-d', strtotime(date('Y') . '-' . date('m') . '-01')));
+		$sql .= " AND date_transport>=" . $dbh->quote(date('Y-m-d', mktime(0, 0, 0, date('m')-1, 1, date('Y') ) ) );
 
 		$sth = $dbh->query($sql);
 		$result = $sth->fetchAll(PDO::FETCH_ASSOC);
@@ -2899,11 +2906,18 @@ class Transport {
 		$sql .= " WHERE transport.id_beneficiaire = beneficiaire.id ";
 		$sql .= " AND transport.id_filiale=" . $_SESSION['filiale']['id'];
 		$sql .= " AND transport.is_annule=0";
-		$sql .= " AND transport.date_transport>=" . $dbh->quote(date('Y-m-d', strtotime(date('Y') . '-' . date('m') . '-01')));
+		//$sql .= " AND transport.date_transport>=" . $dbh->quote(date('Y-m-d', strtotime(date('Y') . '-' . date('m') . '-01')));
+		$sql .= " AND transport.date_transport>=" . $dbh->quote(date('Y-m-d', mktime(0, 0, 0, date('m')-1, 1, date('Y') ) ) );
 		$sql .= " ORDER BY date_transport, heure_debut";
 
 		$sth = $dbh->query($sql);
 		$result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+		$html_code .= '<p>';
+			$html_code .= '<a id="show_past_transports" href="#">';
+				$html_code .= '<em>Afficher les transports du mois précédent</em>';
+			$html_code .= '</a>';
+		$html_code .= '</p>';
 
 
 		if (count($result) > 0) {
@@ -2935,7 +2949,14 @@ class Transport {
 								}
 							}
 
-							$html_code .= '<tr>';
+							$html_code .= '<tr';
+								if ( strtotime($row['date_transport']) < mktime(0, 0, 0, date('m'), 1, date('Y') ) ) {
+									$html_code .= ' class="hide_transport"';
+								}
+							$html_code .= '>';
+
+
+
 								if ($row['date_transport'] == date('Y-m-d')) {
 									$html_code .= '<th><a name="' . $row['date_transport'] . '"><a class="header_date_today" href="#top">' . date_yyyymmdd_to_ddmmyyyy($row['date_transport']) . ' - ' . substr($txt_weekday, 0, 3) . '</a></th>';
 								} else {
@@ -2947,7 +2968,11 @@ class Transport {
 							$last_date_txt = $row['date_transport'];
 						}
 
-						$html_code .= '<tr>';
+						$html_code .= '<tr';
+							if ( strtotime($row['date_transport']) < mktime(0, 0, 0, date('m'), 1, date('Y') ) ) {
+								$html_code .= ' class="hide_transport"';
+							}
+						$html_code .= '>';
 
 							$html_code .= '<td>';
 								$html_code .= '<a href="?module=transport&amp;action=view&amp;id=' . $row['id'] . '">';
