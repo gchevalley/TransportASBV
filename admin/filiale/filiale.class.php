@@ -2795,6 +2795,186 @@ class Filiale {
 		}
 
 
+		// stat point depart
+		$sql = "SELECT id, point_depart, point_arrivee ";
+		$sql .= " FROM transport INNER JOIN transport_transporteur ON transport.id = transport_transporteur.id_transport ";
+		$sql .= " WHERE transport.id_filiale=" . $_SESSION['filiale']['id'];
+		$sql .= " AND transport.is_annule = 0 ";
+		$sql .= " AND transport.date_transport >=" . $dbh->quote(date('Y-m-d', mktime(0, 0, 0, date('m'), 1, date('Y')-1 ) ) ) ;
+
+		$sth = $dbh->query($sql);
+		$transports_stat_depart_id = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+		$stat_points_depart = array();
+		$stat_points_arrivee = array();
+		if (count($transports_stat_depart_id) > 0) {
+			load_class_and_interface(array('Transport'));
+
+			foreach ($transports_stat_depart_id as $row) {
+
+				$tmp_point_depart = unserialize( $row['point_depart'] );
+				$tmp_point_arrivee = unserialize( $row['point_arrivee'] );
+
+				if ( isset( $stat_points_depart[$tmp_point_depart['ville']] ) ) {
+					$stat_points_depart[$tmp_point_depart['ville']] += 1;
+				} else {
+					$stat_points_depart[$tmp_point_depart['ville']] = 1;
+				}
+
+
+				if ( isset( $stat_points_arrivee[$tmp_point_arrivee['ville']] ) ) {
+					$stat_points_arrivee[$tmp_point_arrivee['ville']] += 1;
+				} else {
+					$stat_points_arrivee[$tmp_point_arrivee['ville']] = 1;
+				}
+
+			}
+
+			arsort($stat_points_depart);
+			arsort($stat_points_arrivee);
+
+			$html_code .= '<h1>Statistiques - points de départ sur 1 an glissant</h1>';
+
+			$html_code .= '<table>';
+				$html_code .= '<thead>';
+					$html_code .= '<tr>';
+						$html_code .= '<th>Ville</th>';
+						$html_code .= '<th>Nombre de trajets</th>';
+					$html_code .= '</tr>';
+				$html_code .= '</thead>';
+
+				$html_code .= '<tbody>';
+				$i=0;
+
+				foreach($stat_points_depart as $key => $value) {
+					$html_code .= '<tr>';
+						$html_code .= "<td>$key</td>";
+						$html_code .= "<td>$value</td>";
+					$html_code .= '</tr>';
+
+					$i += 1;
+
+					if ($i == 15) {
+						break;
+					}
+
+				}
+
+				$html_code .= '</tbody>';
+			$html_code .= '</table>';
+
+
+			$html_code .= '<h1>Statistiques - points d\'arrivée sur 1 an glissant</h1>';
+
+			$html_code .= '<table>';
+				$html_code .= '<thead>';
+					$html_code .= '<tr>';
+						$html_code .= '<th>Ville</th>';
+						$html_code .= '<th>Nombre de trajets</th>';
+					$html_code .= '</tr>';
+				$html_code .= '</thead>';
+
+				$html_code .= '<tbody>';
+				$i=0;
+
+				foreach($stat_points_arrivee as $key => $value) {
+					$html_code .= '<tr>';
+						$html_code .= "<td>$key</td>";
+						$html_code .= "<td>$value</td>";
+					$html_code .= '</tr>';
+
+					$i += 1;
+
+					if ($i == 15) {
+						break;
+					}
+
+				}
+
+				$html_code .= '</tbody>';
+			$html_code .= '</table>';
+		}
+
+
+
+		// taux d annulation
+		$sql = "SELECT YEAR(date_transport) AS year, MONTH(date_transport) AS month, COUNT(id) AS nbre_transports,  SUM(CASE WHEN is_annule = 1 THEN 1 ELSE 0 END)/count(id) AS taux_annulation ";
+		$sql .= " FROM transport ";
+		$sql .= " WHERE transport.id_filiale=" . $_SESSION['filiale']['id'];
+		$sql .= " GROUP BY MONTH(date_transport), YEAR(date_transport)";
+		$sql .= " ORDER BY YEAR(date_transport) DESC,  MONTH(date_transport) DESC";
+		$sql .= " LIMIT 24";
+
+		$sth = $dbh->query($sql);
+		$result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+
+		if (count($result) > 0) {
+
+			$html_code .= '<h1>Taux d\'annulation à travers le temps</h1>';
+
+			$html_code .= '<table>';
+				$html_code .= '<thead>';
+					$html_code .= '<tr>';
+						$html_code .= '<th>Mois</th>';
+						$html_code .= '<th>Transports rentrés</th>';
+						$html_code .= '<th>% d\'annulation</th>';
+					$html_code .= '</tr>';
+				$html_code .= '</thead>';
+
+				$html_code .= '<tbody>';
+
+					$last_year = '';
+
+					foreach ($result as $row) {
+
+						if ($row['month'] == date('m')) {
+							$class_row = 'highlights';
+						} else {
+							$class_row = '';
+						}
+
+						if ($row['year'] != $last_year) {
+							$html_code .= '<tr>';
+								$html_code .= '<th>';
+									$html_code .= $row['year'];
+									$last_year = $row['year'];
+								$html_code .= '</th>';
+							$html_code .= '</tr>';
+						}
+
+						$html_code .= '<tr class="' . $class_row . '">';
+
+
+							$html_code .= '<td>';
+								foreach ($mois as $index => $mois_txt) {
+									if ($row['month'] == $index) {
+										$html_code .= ucfirst($mois_txt);
+										break;
+									}
+								}
+							$html_code .= '</td>';
+
+							$html_code .= '<td>';
+								$html_code .= number_format($row['nbre_transports'], 0, '.', '\'');
+							$html_code .= '</td>';
+
+							$html_code .= '<td>';
+								$html_code .= number_format(100*$row['taux_annulation'], 1, '.', '\'') . '%';
+							$html_code .= '</td>';
+						$html_code .= '</tr>';
+					}
+
+				$html_code .= '</tbody>';
+
+			$html_code .= '</table>';
+		}
+
+
+
+
+
+
 		// listings
 		load_class_and_interface(array('Listing'));
 
@@ -3039,7 +3219,7 @@ class Filiale {
 				$stat_chauffeur_previous_months[$i] = array();
 			} else {
 				foreach ($result as $row) {
-					$stat_chauffeur_previous_months[$i][$row['id_transporteur']] = array('trajet' => $row[count_trajet], 'km' => $row['sum_km'], 'remboursement' => $row['sum_remboursement']);
+					$stat_chauffeur_previous_months[$i][$row['id_transporteur']] = array('trajet' => $row['count_trajet'], 'km' => $row['sum_km'], 'remboursement' => $row['sum_remboursement']);
 				}
 			}
 		}

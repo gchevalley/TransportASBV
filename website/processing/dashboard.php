@@ -626,7 +626,7 @@ if (count($result) > 0) {
 					} elseif ($point_depart['type'] == 'lieu') {
 						$tag_title = $point_depart['nom_complet'];
 
-						if ($point_depart['adresse'] != '') {
+						if (isset($point_depart['adresse']) && $point_depart['adresse'] != '') {
 							$tag_title .= ' - ' . $point_depart['adresse'];
 						}
 					}
@@ -642,7 +642,7 @@ if (count($result) > 0) {
 					} elseif ($point_arrivee['type'] == 'lieu') {
 						$tag_title = $point_arrivee['nom_complet'];
 
-						if ($point_arrivee['adresse'] != '') {
+						if (isset($point_arrivee['adresse']) && $point_arrivee['adresse'] != '') {
 							$tag_title .= ' - ' . $point_arrivee['adresse'];
 						}
 					}
