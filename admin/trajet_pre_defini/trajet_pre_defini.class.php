@@ -348,14 +348,14 @@ class Trajet_Pre_Defini {
 				$pays2_without_accent = str_replace(' ', '+', stripAccents($pays2));
 			}
 
+			global $cfg;
+			//$url='http://maps.google.com/maps/api/directions/xml?language=fr&origin=' . $adresse1_without_accent . $ville1_without_accent . $pays1_without_accent . '&destination=' . $adresse2_without_accent . $ville2_without_accent . $pays2_without_accent . '&sensor=false';
+			$url='https://maps.googleapis.com/maps/api/directions/xml?language=fr&origin=' . $adresse1_without_accent . $ville1_without_accent . $pays1_without_accent . '&destination=' . $adresse2_without_accent . $ville2_without_accent . $pays2_without_accent . '&sensor=false&key=' . $cfg['APIGOOG']['apikey'];
 
-
-			$url='http://maps.google.com/maps/api/directions/xml?language=fr&origin=' . $adresse1_without_accent . $ville1_without_accent . $pays1_without_accent . '&destination=' . $adresse2_without_accent . $ville2_without_accent . $pays2_without_accent . '&sensor=false';
 			$xml=file_get_contents($url);
 			$root = simplexml_load_string($xml);
 
 			$status_query = (string) $root->status;
-
 			if ($status_query != 'OK') {
 				return FALSE;
 			}

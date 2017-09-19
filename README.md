@@ -18,5 +18,7 @@ $cfg['DIRECTORY']['help_files'] = 'doc/help/';
 
 $cfg['MAILSERVER']['ip'] = '<address>';
 
+$cfg['APIGOOG']['apikey'] = '<google api key for directions>';
+
 ?>
 ```
