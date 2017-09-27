@@ -676,6 +676,7 @@ class GLM {
 		$sql = "SELECT benevole_participation_filiale.id ";
 		$sql .= " FROM benevole_participation_filiale INNER JOIN benevole_disponibilite_standard ON benevole_participation_filiale.id = benevole_disponibilite_standard.id_benevole ";
 		$sql .= " WHERE benevole_participation_filiale.id_filiale=" . $this->filiale->get_id();
+		$sql .= " AND benevole_participation_filiale.is_transporteur=1 ";
 		$sql .= " AND benevole_disponibilite_standard.id_categorie=" . Benevole_Disponibilite_Categorie::get_id_from_nom('transport');
 		$sql .= " AND benevole_disponibilite_standard.id_jour_semaine=$id_jour_semaine";
 		$sql .= " AND benevole_disponibilite_standard.id_periode_journee=$id_periode_journee";
