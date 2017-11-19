@@ -1005,7 +1005,7 @@ class Transporteur extends Benevole {
 						$mm_rdv_to = $mm_rdv_from + ($duree * 60);
 					} else {
 						$hh_rdv_to = $hh_rdv_from + ((int) $duree / 1); //division entiere
-						$mm_rdv_to = mm_rdv_from + (($duree % 1)*60); //modulo
+						$mm_rdv_to = $mm_rdv_from + (($duree % 1)*60); //modulo
 					}
 				}
 				

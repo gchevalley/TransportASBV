@@ -357,6 +357,7 @@ class Trajet_Pre_Defini {
 
 			$status_query = (string) $root->status;
 			if ($status_query != 'OK') {
+				echo $status_query;
 				return FALSE;
 			}
 

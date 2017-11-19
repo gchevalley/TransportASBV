@@ -155,7 +155,6 @@ class GLM {
 			}
 
 		} else {
-
 			$this->transport = $obj_transport;
 
 			$id_filiale = $this->transport->get_id_filiale();
@@ -183,12 +182,11 @@ class GLM {
 
 
 			$array_transporteur_id = array_diff($this->array_transporteurs_disponible_date_and_periode, $this->array_transporteurs_inactive, $this->array_transporteurs_non_disponible_date, $this->array_transporteurs_inatteignable_aujourdhui, $this->array_transporteurs_contrainte_beneficaire, $this->array_transporteurs_deja_transporteurs_pour_date_et_periode_transport, $this->array_transporteur_a_la_permanence);
-
+			
 			foreach($array_transporteur_id as $transporteur) {
 				$this->array_transporteur[] = new Transporteur($transporteur);
 				$matrix_ranking[][0] = $transporteur;
 			}
-
 
 
 			// RANKING \\
@@ -779,7 +777,7 @@ class GLM {
 
 		$date = $dbh->quote($date);
 
-		$sql = "SELECT transport_transporteur.id_transporteur ";
+		$sql = "SELECT transport_transporteur.id_transporteur, heure_debut ";
 		$sql .= " FROM transport_transporteur INNER JOIN transport on transport_transporteur.id_transport = transport.id ";
 		$sql .= " WHERE transport.date_transport=$date";
 		$sql .= " AND transport.is_annule=0";

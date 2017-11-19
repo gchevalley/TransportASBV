@@ -993,7 +993,7 @@ class Filiale {
 						}
 
 
-						if ($row['is_annule'] == 1) {
+						if ($row['is_annule'] == 1 || is_null($row['id_transporteur']) ) {
 							$class = 'transport_annule';
 						} else {
 							if ($row['is_cloture'] == 1) {
@@ -1845,7 +1845,8 @@ class Filiale {
 
 					//charge les trajet du mois pour le beneficiaire concerne
 					$sql = "SELECT transport.* ";
-					$sql .= " FROM transport ";
+					//$sql .= " FROM transport ";
+					$sql .= " FROM transport INNER JOIN transport_transporteur ON transport.id = transport_transporteur.id_transport ";
 					$sql .= " WHERE id_beneficiaire=" . $facture_individuelle['id_beneficiaire'];
 					$sql .= " AND id_filiale=" . $_SESSION['filiale']['id'];
 					$sql .= " AND transport.is_cloture=1";
@@ -1885,8 +1886,10 @@ class Filiale {
 							$tmp_beneficiaire_nom_complet = $tmp_beneficiaire->get_nom_complet();
 							//$tmp_beneficiaire_adresse = $tmp_beneficiaire->get_adresse();
 							$tmp_beneficiaire_adresse = $tmp_beneficiaire->get_adresse_facturation();
-
-							$pdf->CreateTextBox($tmp_beneficiaire_adresse['nom_complet']['titre'], $posX_beneficiaire, $posY_beneficiaire, 80, 10, 10);
+							
+							if (isset($tmp_beneficiaire_adresse['nom_complet']['titre'])) {
+								$pdf->CreateTextBox($tmp_beneficiaire_adresse['nom_complet']['titre'], $posX_beneficiaire, $posY_beneficiaire, 80, 10, 10);
+							}
 							$pdf->CreateTextBox(mb_strtoupper(stripAccents($tmp_beneficiaire_adresse['nom_complet']['nom'])) . ' ' . $tmp_beneficiaire_adresse['nom_complet']['prenom'], $posX_beneficiaire, $posY_beneficiaire+5, 80, 10, 10, 'B');
 
 							if (isset($tmp_beneficiaire_adresse['adresse_complement']) && $tmp_beneficiaire_adresse['adresse_complement'] != '') {
@@ -2240,7 +2243,7 @@ class Filiale {
 					$total = 0;
 					foreach ($transports_beneficaire_mois_facturation as $course_individuelle) {
 
-						if ($currY >= 268 || $first_page === TRUE) {
+						if ( $first_page === TRUE || $currY >= 268) {
 							$first_page = FALSE;
 							$count_transport = 0;
 
@@ -2255,7 +2258,7 @@ class Filiale {
 							$pdf->CreateTextBox($tmp_transporteur_nom_complet['titre'], $posX_transporteur, $posY_transporteur, 80, 10, 10);
 							$pdf->CreateTextBox(mb_strtoupper(stripAccents($tmp_transporteur_nom_complet['nom'])) . ' ' . $tmp_transporteur_nom_complet['prenom'], $posX_transporteur, $posY_transporteur+5, 80, 10, 10, 'B');
 
-							if ($tmp_transporteur_adresse['adresse_complement'] != '') {
+							if (isset($tmp_transporteur_adresse['adresse_complement']) && $tmp_transporteur_adresse['adresse_complement'] != '') {
 								$pdf->CreateTextBox($tmp_transporteur_adresse['adresse'], $posX_transporteur, $posY_transporteur+10, 80, 10, 10);
 								$pdf->CreateTextBox($tmp_transporteur_adresse['adresse_complement'], $posX_transporteur, $posY_transporteur+15, 80, 10, 10);
 								$pdf->CreateTextBox($tmp_transporteur_adresse['npa'] . ' ' . $tmp_transporteur_adresse['ville'], $posX_transporteur, $posY_transporteur+20, 80, 10, 10);
@@ -2687,6 +2690,7 @@ class Filiale {
 		} else {
 			die();
 		}
+		
 
 		$html_code = '';
 
@@ -2908,7 +2912,6 @@ class Filiale {
 		$sth = $dbh->query($sql);
 		$result = $sth->fetchAll(PDO::FETCH_ASSOC);
 
-
 		if (count($result) > 0) {
 
 			$html_code .= '<h1>Taux d\'annulation à travers le temps</h1>';
@@ -2969,8 +2972,6 @@ class Filiale {
 
 			$html_code .= '</table>';
 		}
-
-
 
 
 
@@ -3185,12 +3186,11 @@ class Filiale {
 			$html_code .= '</p>';
 
 
-
-
+/*
 		// membres + stats
 		$tmp_filiale->mountListBenevole();
+		
 		Filiale::extract_csv_stats_transporteur();
-
 
 		$periode_histo = 3;
 
@@ -3224,7 +3224,7 @@ class Filiale {
 			}
 		}
 
-
+		
 		if (count($tmp_filiale->array_benevole) > 0) {
 
 			$j = 1;
@@ -3387,7 +3387,7 @@ class Filiale {
 		}
 
 		$html_code .= load_help_file_if_necessary(get_file_help_path(__FILE__, $action));
-
+*/
 		return $html_code;
 
 	} // class.Filiale.form.admin
@@ -3631,7 +3631,7 @@ class Filiale {
 
 		$sth = $dbh->query($sql);
 		$result = $sth->fetchAll(PDO::FETCH_ASSOC);
-
+		
 		if (count($result) > 0) {
 			//$last_transporteur = $result[0]['id_transporteur'];
 			$last_transporteur = 0;
@@ -3644,6 +3644,7 @@ class Filiale {
 			foreach ($distinct_date as $date) {
 				$matrix_export[$i][$date['year'] . '-' . $date['month']] = $date['year'] . '-' . $date['month'];
 			}
+			
 
 
 			// preparation de la matrix d'export
@@ -3665,7 +3666,6 @@ class Filiale {
 					}
 
 				}
-
 				//remplisage de la bonne colonne
 				$matrix_export[$i][$row['year'] . '-' . $row['month']] = $row['count_trajet'];
 
@@ -3688,7 +3688,6 @@ class Filiale {
 				$str .= "\n";
 			}
 
-
 			global $cfg;
 			if (!is_dir('../' . $cfg['DIRECTORY']['extract'])) {
 				mkdir('../' . $cfg['DIRECTORY']['extract']);
@@ -3700,7 +3699,7 @@ class Filiale {
 
 
 		}
-
+echo 'greg2';
 
 	} // class.Filiale.function.extract_csv_stats_transporteur
 

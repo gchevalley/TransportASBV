@@ -883,6 +883,8 @@ class Transport {
 		if ($email && $this->get_date() >= date('Y-m-d')) {
 
 			$tmp_beneficiaire = new Beneficiaire($this->get_id_beneficiaire());
+			$tmp_beneficiaire_for_email = new Beneficiaire($this->get_id_beneficiaire());
+			$tmp_beneficiaire_for_email_nom_complet = $tmp_beneficiaire_for_email->get_nom_complet();
 			$tmp_beneficiaire_nom_complet = $tmp_beneficiaire->get_nom_complet();
 			$tmp_beneficiaire_tel = $tmp_beneficiaire->get_telephone();
 
@@ -1281,7 +1283,7 @@ class Transport {
 			$mail->AddReplyTo($tmp_filiale->get_email_permanence(), $tmp_filiale->get_nom());
 			$mail->WordWrap = 50;
 			$mail->IsHTML(true);
-			$mail->Subject = utf8_decode('Nouveau transport pour ' . format_titre($tmp_beneficiaire_nom_complet['titre']) . ' ' . mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) );
+			$mail->Subject = utf8_decode('Nouveau transport pour ' . format_titre($tmp_beneficiaire_for_email_nom_complet['titre']) . ' ' . mb_strtoupper(stripAccents($tmp_beneficiaire_for_email_nom_complet['nom'])) );
 			$mail->Body    = utf8_decode($html_email);
 			$mail->Send();
 
@@ -2695,6 +2697,8 @@ class Transport {
 							if ( isset($data_to_display['id_categorie']['value']) ) {
 								if ($data_to_display['id_categorie']['value'] == $row['id']) {
 									$html_code .= 'selected="selected">';
+								} else {
+									$html_code .= '>';
 								}
 							} else {
 								if (!isset($data_to_display['id_categorie']['value']) || $data_to_display['id_categorie']['value'] == '') {
@@ -3322,7 +3326,6 @@ class Transport {
 		}
 
 		load_class_and_interface(array('GLM', 'Beneficiaire', 'Transporteur'));
-
 		$tmp_GLM = new GLM($tmp_transport);
 		$list_potentiel_transporteur = $tmp_GLM->get_chauffeurs_potentiels();
 
