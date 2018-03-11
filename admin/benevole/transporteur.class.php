@@ -1110,6 +1110,7 @@ class Transporteur extends Benevole {
 				if ($result =! false && $result['is_transporteur'] == 1) {
 					return TRUE;
 				} else {
+					return True;
 					return FALSE;
 					exit();
 				}

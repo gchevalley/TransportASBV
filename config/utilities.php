@@ -806,4 +806,17 @@ function arrondi($value, $base) {
 
 }
 
+
+function convertToISOCharset($array) {
+	foreach($array as $key => $value) {
+		if(is_array($value)) {
+			$array[$key] = convertToISOCharset($value);
+    } else {
+			$array[$key] = mb_convert_encoding($value, 'ISO-8859-1', 'UTF-8');
+		}
+	}
+	return $array;
+}
+
+
 ?>

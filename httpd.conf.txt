@@ -1,0 +1,53 @@
+	Alias /TransportASBV/website "C:/ASBV/TransportASBV/website/"
+	# Alias /TransportASBV/maintenance "C:/ASBV/TransportASBV/maintenance/"
+	Alias /TransportASBV/extract "C:/ASBV/TransportASBV/extract/"
+	Alias /TransportASBV/listing "C:/ASBV/TransportASBV/listing/"
+	Alias /TransportASBV/facturation "C:/ASBV/TransportASBV/facturation/"
+	Alias /TransportASBV/remboursement "C:/ASBV/TransportASBV/remboursement/"
+
+
+
+<Directory "C:/ASBV/TransportASBV/website/">
+    Options Indexes FollowSymLinks Includes ExecCGI
+	AllowOverride All
+	Order allow,deny
+    Allow from 127.0.0.1
+</Directory>
+
+
+<Directory "C:/ASBV/TransportASBV/maintenance/">
+    Options Indexes FollowSymLinks Includes ExecCGI
+	AllowOverride All
+	Order allow,deny
+    Allow from 127.0.0.1
+</Directory>
+
+
+<Directory "C:/ASBV/TransportASBV/extract/">
+    Options Indexes FollowSymLinks Includes ExecCGI
+	AllowOverride All
+	Order allow,deny
+    Allow from 127.0.0.1
+</Directory>
+
+<Directory "C:/ASBV/TransportASBV/listing/">
+    Options Indexes FollowSymLinks Includes ExecCGI
+	AllowOverride All
+	Order allow,deny
+    Allow from 127.0.0.1
+</Directory>
+
+<Directory "C:/ASBV/TransportASBV/facturation/">
+    Options Indexes FollowSymLinks Includes ExecCGI
+	AllowOverride All
+	Order allow,deny
+    Allow from 127.0.0.1
+</Directory>
+
+
+<Directory "C:/ASBV/TransportASBV/remboursement/">
+    Options Indexes FollowSymLinks Includes ExecCGI
+	AllowOverride All
+	Order allow,deny
+    Allow from 127.0.0.1
+</Directory>

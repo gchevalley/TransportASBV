@@ -313,8 +313,8 @@ class Trajet_Pre_Defini {
 
 
 	public static function download_distance_from_google_maps($adresse1, $npa1, $ville1, $pays1, $adresse2, $npa2, $ville2, $pays2, $create_entry_trajet_pre_defini=TRUE) {
-
-		if (checkInternetConnection('maps.google.com')) {
+		
+		if (checkInternetConnection('www.google.ch')) {
 
 			// l'adresse est facultative
 			if ($adresse1 != '') {
@@ -347,12 +347,31 @@ class Trajet_Pre_Defini {
 			if ($pays2 != '') {
 				$pays2_without_accent = str_replace(' ', '+', stripAccents($pays2));
 			}
-
+			
 			global $cfg;
 			//$url='http://maps.google.com/maps/api/directions/xml?language=fr&origin=' . $adresse1_without_accent . $ville1_without_accent . $pays1_without_accent . '&destination=' . $adresse2_without_accent . $ville2_without_accent . $pays2_without_accent . '&sensor=false';
 			$url='https://maps.googleapis.com/maps/api/directions/xml?language=fr&origin=' . $adresse1_without_accent . $ville1_without_accent . $pays1_without_accent . '&destination=' . $adresse2_without_accent . $ville2_without_accent . $pays2_without_accent . '&sensor=false&key=' . $cfg['APIGOOG']['apikey'];
-
-			$xml=file_get_contents($url);
+			
+			
+			//$ch = curl_init();
+			//curl_setopt($ch, CURLOPT_URL, $url);
+			//curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			//curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+			//curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+			//$xml = curl_exec($ch);
+			
+			//return $xml; 
+			
+			//curl_close($ch);
+			
+			$arrContextOptions=array(
+				"ssl"=>array(
+					"verify_peer"=>false,
+					"verify_peer_name"=>false,
+				),
+			); 
+			
+			$xml=file_get_contents($url, false, stream_context_create($arrContextOptions));
 			$root = simplexml_load_string($xml);
 
 			$status_query = (string) $root->status;

@@ -103,7 +103,7 @@ class Transport {
 		$this->is_archive = $result['is_archive'];
 		$this->is_annule = $result['is_annule'];
 		$this->raison_annulation = $result['raison_annulation'];
-
+		
 		$this->mountBeneficiaire();
 		$this->mountFiliale();
 		$this->mountCategorie();

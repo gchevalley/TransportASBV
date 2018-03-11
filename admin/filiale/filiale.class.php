@@ -971,6 +971,7 @@ class Filiale {
 
 					$last_date_txt = '';
 
+
 					foreach ($result as $row) {
 
 						//header date
@@ -983,7 +984,6 @@ class Filiale {
 						}
 
 						$tmp_transport = new Transport($row['id']);
-
 						/*si lors de sa création il y a eu une coupure
 						 * avec la connexion internet, il est nécessaire
 						 * de recalculer, la distance et les couts
@@ -1298,22 +1298,25 @@ class Filiale {
 
 					$j = 0;
 
-					$matrix_to_export[$j][0] = 'nom';
-					$matrix_to_export[$j][1] = 'actes';
-					$matrix_to_export[$j][2] = 'km';
-					$matrix_to_export[$j][3] = 'remboursement';
+					$matrix_to_export[$j][0] = 'compteur';
+					$matrix_to_export[$j][1] = 'nom';
+					$matrix_to_export[$j][2] = 'actes';
+					$matrix_to_export[$j][3] = 'km';
+					$matrix_to_export[$j][4] = 'remboursement';
 					$j++;
 
 					foreach ($result as $row) {
 						$html_code .= '<tr>';
 
 							//transporteur
+							$matrix_to_export[$j][0] = $j;
+
 							$html_code .= '<td>';
 								if (is_numeric($row['id_transporteur']) && Transporteur::id_exists($row['id_transporteur'])) {
 									$tmp_transporteur = new Transporteur($row['id_transporteur']);
 									$tmp_transporteur_nom_complet = $tmp_transporteur->get_nom_complet();
 
-									$matrix_to_export[$j][0] = mb_strtoupper(stripAccents($tmp_transporteur_nom_complet['nom'])) . '_' . $tmp_transporteur_nom_complet['prenom'];
+									$matrix_to_export[$j][1] = mb_strtoupper(stripAccents($tmp_transporteur_nom_complet['nom'])) . ' ' . $tmp_transporteur_nom_complet['prenom'];
 
 									$html_code .= '<a href="?module=benevole&action=view&id=' . $row['id_transporteur'] . '">';
 										$html_code .= $tmp_transporteur_nom_complet['titre'] . ' ' . $tmp_transporteur_nom_complet['nom'];
@@ -1324,7 +1327,7 @@ class Filiale {
 							$html_code .= '<td>';
 
 								$nbre_transport += $row['nbre_trajets'];
-								$matrix_to_export[$j][1] = $row['nbre_trajets'];
+								$matrix_to_export[$j][2] = $row['nbre_trajets'];
 
 								if ($row['nbre_trajets'] == 0) {
 									$html_code .= 'aucun transport';
@@ -1337,7 +1340,7 @@ class Filiale {
 
 							$html_code .= '<td>';
 								$sum_km += $row['sum_km'];
-								$matrix_to_export[$j][2] = $row['sum_km'];
+								$matrix_to_export[$j][3] = $row['sum_km'];
 
 								$html_code .= $row['sum_km'] . ' km';
 							$html_code .= '</td>';
@@ -1346,7 +1349,7 @@ class Filiale {
 								//$total_a_rembourser += $row['sum_cout'];
 								//$matrix_to_export[$j][3] = $row['sum_cout'];
 								$total_a_rembourser += arrondi($row['sum_cout'], 0.10);
-								$matrix_to_export[$j][3] = arrondi($row['sum_cout'], 0.10);
+								$matrix_to_export[$j][4] = arrondi($row['sum_cout'], 0.10);
 
 								$html_code .= 'CHF ' . number_format(arrondi($row['sum_cout'], 0.10),2);
 							$html_code .= '</td>';
@@ -1362,10 +1365,10 @@ class Filiale {
 						$j++;
 					}
 
-					$matrix_to_export[$j][0] = 'TOTAL';
-					$matrix_to_export[$j][1] = $nbre_transport;
-					$matrix_to_export[$j][2] = $sum_km;
-					$matrix_to_export[$j][3] = $total_a_rembourser;
+					$matrix_to_export[$j][1] = 'TOTAL';
+					$matrix_to_export[$j][2] = $nbre_transport;
+					$matrix_to_export[$j][3] = $sum_km;
+					$matrix_to_export[$j][4] = $total_a_rembourser;
 					$j++;
 
 
@@ -1386,10 +1389,15 @@ class Filiale {
 
 				$objPHPExcel->setActiveSheetIndex(0);
 
-				$i = 1;
-				$objPHPExcel->setActiveSheetIndex(0)->setCellValue('A1', 'Année : ' . $data_to_display['facturation_year']['value']);
-				$objPHPExcel->setActiveSheetIndex(0)->setCellValue('B1', 'Mois : ' . $data_to_display['facturation_month']['value']);
-				$i++;
+				//titre du fichier
+				$objPHPExcel->setActiveSheetIndex(0)->setCellValue('A1', 'Remboursement des chauffeurs : ' . $data_to_display['facturation_year']['value'] . '-' . $data_to_display['facturation_month']['value']);
+				$objPHPExcel->setActiveSheetIndex(0)->getStyle('A1')->getFont()->setBold(true);
+				$objPHPExcel->setActiveSheetIndex(0)->getStyle('A1')->getFont()->setSize(16);
+
+				$i = 3;
+				//$objPHPExcel->setActiveSheetIndex(0)->setCellValue('A3', 'Année : ' . $data_to_display['facturation_year']['value']);
+				//$objPHPExcel->setActiveSheetIndex(0)->setCellValue('B3', 'Mois : ' . $data_to_display['facturation_month']['value']);
+				//$i++;
 
 				foreach ($matrix_to_export as $row) {
 					foreach($row as $index => $column) {
@@ -1408,8 +1416,10 @@ class Filiale {
 				foreach ($matrix_to_export as $row) {
 					foreach($row as $index => $column) {
 
-						$column_xls = xlColumnValue($index+1);
-						$objPHPExcel->setActiveSheetIndex(0)->getColumnDimension($column_xls)->setAutoSize(true);
+						if ($index > 0) {
+							$column_xls = xlColumnValue($index+1);
+							$objPHPExcel->setActiveSheetIndex(0)->getColumnDimension($column_xls)->setAutoSize(true);
+						}
 					}
 					break;
 				}
@@ -1555,16 +1565,20 @@ class Filiale {
 
 					$j = 0;
 
-					$matrix_to_export[$j][0] = 'nom';
-					$matrix_to_export[$j][1] = 'actes';
-					$matrix_to_export[$j][2] = 'km';
-					$matrix_to_export[$j][3] = 'cout';
+					$matrix_to_export[$j][0] = 'compteur';
+					$matrix_to_export[$j][1] = 'nom';
+					$matrix_to_export[$j][2] = 'actes';
+					$matrix_to_export[$j][3] = 'km';
+					$matrix_to_export[$j][4] = 'cout';
 					$j++;
 
 					foreach ($result as $row) {
 						$html_code .= '<tr>';
 
 							//beneficiaire
+
+							$matrix_to_export[$j][0] = $j;
+
 							$html_code .= '<td>';
 								if (is_numeric($row['id_beneficiaire']) && Beneficiaire::id_exists($row['id_beneficiaire'])) {
 									$tmp_beneficiaire = new Beneficiaire($row['id_beneficiaire']);
@@ -1574,14 +1588,14 @@ class Filiale {
 										$html_code .= $tmp_beneficiaire_nom_complet['titre'] . ' ' . $tmp_beneficiaire_nom_complet['nom'];
 									$html_code .= '</a>';
 
-									$matrix_to_export[$j][0] = mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) . '_' . ucfirst(stripAccents($tmp_beneficiaire_nom_complet['prenom']));
+									$matrix_to_export[$j][1] = mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) . ' ' . ucfirst(stripAccents($tmp_beneficiaire_nom_complet['prenom']));
 								}
 							$html_code .= '</td>';
 
 							$html_code .= '<td>';
 
 								$nbre_transport += $row['nbre_trajets'];
-								$matrix_to_export[$j][1] = $row['nbre_trajets'];
+								$matrix_to_export[$j][2] = $row['nbre_trajets'];
 
 								if ($row['nbre_trajets'] == 0) {
 									$html_code .= 'aucun transport';
@@ -1594,7 +1608,7 @@ class Filiale {
 
 							$html_code .= '<td>';
 								$sum_km += $row['sum_km'];
-								$matrix_to_export[$j][2] = $row['sum_km'];
+								$matrix_to_export[$j][3] = $row['sum_km'];
 
 								$html_code .= $row['sum_km'] . ' km';
 							$html_code .= '</td>';
@@ -1607,7 +1621,7 @@ class Filiale {
 */
                             $total_a_payer += arrondi($row['sum_cout'],0.10) ;
 
-								$matrix_to_export[$j][3] = $row['sum_cout'];
+								$matrix_to_export[$j][4] = $row['sum_cout'];
 
 							$html_code .= '</td>';
 
@@ -1624,10 +1638,10 @@ class Filiale {
 
 					}
 
-					$matrix_to_export[$j][0] = 'TOTAL';
-					$matrix_to_export[$j][1] = $nbre_transport;
-					$matrix_to_export[$j][2] = $sum_km;
-					$matrix_to_export[$j][3] = $total_a_payer;
+					$matrix_to_export[$j][1] = 'TOTAL';
+					$matrix_to_export[$j][2] = $nbre_transport;
+					$matrix_to_export[$j][3] = $sum_km;
+					$matrix_to_export[$j][4] = $total_a_payer;
 					$j++;
 
 
@@ -1648,10 +1662,16 @@ class Filiale {
 
 				$objPHPExcel->setActiveSheetIndex(0);
 
-				$i = 1;
-				$objPHPExcel->setActiveSheetIndex(0)->setCellValue('A1', 'Année : ' . $data_to_display['facturation_year']['value']);
-				$objPHPExcel->setActiveSheetIndex(0)->setCellValue('B1', 'Mois : ' . $data_to_display['facturation_month']['value']);
-				$i++;
+				//$i = 1;
+				//$objPHPExcel->setActiveSheetIndex(0)->setCellValue('A1', 'Année : ' . $data_to_display['facturation_year']['value']);
+				//$objPHPExcel->setActiveSheetIndex(0)->setCellValue('B1', 'Mois : ' . $data_to_display['facturation_month']['value']);
+				//$i++;
+
+				$objPHPExcel->setActiveSheetIndex(0)->setCellValue('A1', 'Factures des bénéficiaires : ' . $data_to_display['facturation_year']['value'] . '-' . $data_to_display['facturation_month']['value']);
+				$objPHPExcel->setActiveSheetIndex(0)->getStyle('A1')->getFont()->setBold(true);
+				$objPHPExcel->setActiveSheetIndex(0)->getStyle('A1')->getFont()->setSize(16);
+
+				$i = 3;
 
 				foreach ($matrix_to_export as $row) {
 					foreach($row as $index => $column) {
@@ -1671,12 +1691,13 @@ class Filiale {
 				foreach ($matrix_to_export as $row) {
 					foreach($row as $index => $column) {
 
-						$column_xls = xlColumnValue($index+1);
-						$objPHPExcel->setActiveSheetIndex(0)->getColumnDimension($column_xls)->setAutoSize(true);
+						if ($index > 0) {
+							$column_xls = xlColumnValue($index+1);
+							$objPHPExcel->setActiveSheetIndex(0)->getColumnDimension($column_xls)->setAutoSize(true);
+						}
 					}
 					break;
 				}
-
 
 
 				if (!is_dir('../' . $cfg['DIRECTORY']['extract'])) {
@@ -1820,6 +1841,10 @@ class Filiale {
 				$pdf->SetSubject('Facture passager ASBV');
 				$pdf->SetKeywords('ASBV, ' . ucfirst(stripAccents($tmp_filiale->get_nom())) . ', facture, passager');
 
+				$data_facturation_transports_csv = array();
+
+				// csv headers
+				$data_facturation_transports_csv[] = array("DO_NODOC", "DO_TYPE", "DO_DATE1", "DO_TIME", "DO_REF1", "DO_MONTANT", "DO_COMPTE", "DO_REF6", "AD_CODE", "AD_NOM", "AD_PRENOM", "AD_RUE_1", "AD_RUE_2", "AD_NPA", "AD_VILLE", "AD_ADR2", "DL_NOLIGNE", "DL_DETTYP", "DL_ARTCODE", "DL_DESC", "DL_DATE1", "DL_QTE1", "DL_PRIX", "DL_UNITE", "DL_MONTANT");
 
 				foreach ($result as $testtest => $facture_individuelle ) {
 
@@ -1874,7 +1899,7 @@ class Filiale {
 					$first_page = TRUE;
 					foreach ($transports_beneficaire_mois_facturation as $course_individuelle) {
 
-						if ( $first_page === TRUE || $currY >= 245 ) {
+						if ( $first_page === TRUE || $currY >= 220 ) {
 
 							// add a page
 							$pdf->AddPage();
@@ -1886,7 +1911,7 @@ class Filiale {
 							$tmp_beneficiaire_nom_complet = $tmp_beneficiaire->get_nom_complet();
 							//$tmp_beneficiaire_adresse = $tmp_beneficiaire->get_adresse();
 							$tmp_beneficiaire_adresse = $tmp_beneficiaire->get_adresse_facturation();
-							
+
 							if (isset($tmp_beneficiaire_adresse['nom_complet']['titre'])) {
 								$pdf->CreateTextBox($tmp_beneficiaire_adresse['nom_complet']['titre'], $posX_beneficiaire, $posY_beneficiaire, 80, 10, 10);
 							}
@@ -1897,6 +1922,7 @@ class Filiale {
 								$pdf->CreateTextBox($tmp_beneficiaire_adresse['adresse'], $posX_beneficiaire, $posY_beneficiaire+15, 80, 10, 10);
 								$pdf->CreateTextBox($tmp_beneficiaire_adresse['npa'] . ' ' . $tmp_beneficiaire_adresse['ville'], $posX_beneficiaire, $posY_beneficiaire+20, 80, 10, 10);
 							} else {
+								$tmp_beneficiaire_adresse['adresse_complement'] = '';
 								$pdf->CreateTextBox($tmp_beneficiaire_adresse['adresse'], $posX_beneficiaire, $posY_beneficiaire+10, 80, 10, 10);
 								$pdf->CreateTextBox($tmp_beneficiaire_adresse['npa'] . ' ' . $tmp_beneficiaire_adresse['ville'], $posX_beneficiaire, $posY_beneficiaire+15, 80, 10, 10);
 							}
@@ -2001,10 +2027,75 @@ class Filiale {
 						} else {
 							$currY = $currY+10;
 						}
-					}
 
 
-					if ($currY >= 245) {
+						// decision tree article, nbreUnite, prixUnite
+						//$tmp_filiale_facturation = new Filiale($_SESSION['filiale']['id']);
+						if ( mb_strtoupper(stripAccents($point_depart['ville'])) == mb_strtoupper(stripAccents($point_arrivee['ville'])) || $course_individuelle['nbre_kilometres'] < 10 ) {
+							//forfait
+							if ($course_individuelle['duree_approximative'] > 2) {
+								$facturation_produit = "DOUBLEFO";
+								$facturation_unite = "FORFAIT";
+								$facturation_nbre_unite = 1;
+								$facturation_prix_unite = 2.0 * $tmp_filiale->get_standard_prix_forfait_min();
+								$facturation_description = "Transport ". mb_convert_encoding($depart, 'ISO-8859-1', 'UTF-8') . " -> " . mb_convert_encoding($arrivee, 'ISO-8859-1', 'UTF-8') . " (Forfait double)";
+							} else {
+								$facturation_produit = "FORFAIT";
+								$facturation_unite = "FORFAIT";
+								$facturation_nbre_unite = 1;
+								$facturation_prix_unite = $tmp_filiale->get_standard_prix_forfait_min();
+								$facturation_description = "Transport ". mb_convert_encoding($depart, 'ISO-8859-1', 'UTF-8') . " -> " . mb_convert_encoding($arrivee, 'ISO-8859-1', 'UTF-8') . " (Forfait)";
+							}
+						} else {
+							// prix au km
+							if ($course_individuelle['duree_approximative'] > 2) {
+								$facturation_produit = "DOUBLEKM";
+								$facturation_unite = "KM";
+								$facturation_nbre_unite = $course_individuelle['nbre_kilometres'];
+								$facturation_prix_unite = 2.0 * $tmp_filiale->get_standard_prix_km();
+								$facturation_description = "Transport ". mb_convert_encoding($depart, 'ISO-8859-1', 'UTF-8') . " -> " . mb_convert_encoding($arrivee, 'ISO-8859-1', 'UTF-8') . ' ' . number_format($course_individuelle['nbre_kilometres'], 0) . 'KM ' . "(Double)";
+							} else {
+								$facturation_produit = "KM";
+								$facturation_unite = "KM";
+								$facturation_nbre_unite = $course_individuelle['nbre_kilometres'];
+								$facturation_prix_unite = $tmp_filiale->get_standard_prix_km();
+								$facturation_description = "Transport ". mb_convert_encoding($depart, 'ISO-8859-1', 'UTF-8') . " -> " . mb_convert_encoding($arrivee, 'ISO-8859-1', 'UTF-8') . ' ' . number_format($course_individuelle['nbre_kilometres'], 0) . 'KM';
+							}
+						}
+
+						$compte_paiement = 1100;
+						$data_facturation_transports_csv[] = array(
+							$course_individuelle['id'],
+							14,
+							date_yyyymmdd_to_ddmmyyyy($course_individuelle['date_transport']),
+							time_hhmmss_to_hhmm($course_individuelle['heure_debut']),
+							'TRANSPORT' . $course_individuelle['id'],
+							0,
+							$compte_paiement,
+							"Transport pour: " . mb_convert_encoding(mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) . ' ' . $tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
+							"PASSAGER" . $facture_individuelle['id_beneficiaire'],
+							mb_convert_encoding($tmp_beneficiaire_adresse['nom_complet']['nom'], 'ISO-8859-1', 'UTF-8'),
+							mb_convert_encoding($tmp_beneficiaire_adresse['nom_complet']['prenom'], 'ISO-8859-1', 'UTF-8'),
+							mb_convert_encoding($tmp_beneficiaire_adresse['adresse'], 'ISO-8859-1', 'UTF-8'),
+							mb_convert_encoding($tmp_beneficiaire_adresse['adresse_complement'], 'ISO-8859-1', 'UTF-8'),
+							$tmp_beneficiaire_adresse['npa'],
+							mb_convert_encoding($tmp_beneficiaire_adresse['ville'], 'ISO-8859-1', 'UTF-8'),
+							"Transport pour : " . mb_convert_encoding(mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) . ' ' . $tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
+							1,
+							0,
+							$facturation_produit,
+							$facturation_description,
+							date_yyyymmdd_to_ddmmyyyy($course_individuelle['date_transport']),
+							$facturation_nbre_unite,
+							$facturation_prix_unite,
+							$facturation_unite,
+							round($course_individuelle['cout_trajet'],2)
+						);
+
+					} // boucle courses individuelles du passager
+
+
+					if ($currY >= 240) {
 						$pdf->AddPage();
 						$currY = 128;
 					}
@@ -2018,7 +2109,7 @@ class Filiale {
 					$pdf->CreateTextBox($currency, $c_prix, $currY+5, 20, 10, 10, 'B', 'L');
 					$pdf->CreateTextBox(number_format($total,2), $c_prix, $currY+5, 20, 10, 10, 'B', 'R');
 
-				}
+				} // boucle passagers avec facture ce mois
 
 				//Close and output PDF document
 				$projet_name = substr($_SERVER['SCRIPT_NAME'], 1, (strpos($_SERVER['SCRIPT_NAME'], '/', 1))-1);
@@ -2046,6 +2137,14 @@ class Filiale {
 				if (!isset($data_to_display['id_beneficiaire']['value'])) {
 					//facturation integral du mois
 					$pdf_file = 'FacturationPassagers' . $data_to_display['facturation_year']['value'] . '_'. $data_to_display['facturation_month']['value'] . '.pdf';
+					$csv_file = 'FacturationPassagers' . $data_to_display['facturation_year']['value'] . '_'. $data_to_display['facturation_month']['value'] . '.csv';
+
+					$fp = fopen($base_dir . '/' . $directory_facturation . '/' . $data_to_display['facturation_year']['value'] . '/' . $data_to_display['facturation_month']['value'] . '/' . $csv_file, 'w');
+					foreach ($data_facturation_transports_csv as $facturation_transports_csv) {
+						fputcsv($fp, $facturation_transports_csv, ";");
+					}
+					fclose($fp);
+
 
 					if (isset($data_to_display['reload']['value']) && $data_to_display['reload']['value'] === FALSE) {
 
@@ -2690,7 +2789,7 @@ class Filiale {
 		} else {
 			die();
 		}
-		
+
 
 		$html_code = '';
 
@@ -3189,7 +3288,7 @@ class Filiale {
 /*
 		// membres + stats
 		$tmp_filiale->mountListBenevole();
-		
+
 		Filiale::extract_csv_stats_transporteur();
 
 		$periode_histo = 3;
@@ -3224,7 +3323,7 @@ class Filiale {
 			}
 		}
 
-		
+
 		if (count($tmp_filiale->array_benevole) > 0) {
 
 			$j = 1;
@@ -3631,7 +3730,7 @@ class Filiale {
 
 		$sth = $dbh->query($sql);
 		$result = $sth->fetchAll(PDO::FETCH_ASSOC);
-		
+
 		if (count($result) > 0) {
 			//$last_transporteur = $result[0]['id_transporteur'];
 			$last_transporteur = 0;
@@ -3644,7 +3743,7 @@ class Filiale {
 			foreach ($distinct_date as $date) {
 				$matrix_export[$i][$date['year'] . '-' . $date['month']] = $date['year'] . '-' . $date['month'];
 			}
-			
+
 
 
 			// preparation de la matrix d'export
