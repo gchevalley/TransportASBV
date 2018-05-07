@@ -75,7 +75,8 @@ class Trajet_Pre_Defini {
 		global $dbh;
 
 		// s'assure que unique (si trouve et que distance differentes -> mise a jour
-		$result = Trajet_Pre_Defini::find_combination($lieu_1, $lieu_2);
+		//$result = Trajet_Pre_Defini::find_combination($lieu_1, $lieu_2);
+		$result = Trajet_Pre_Defini::opti_find_combination($lieu_1, $lieu_2);
 		if ($result) {
 			$tmp_trajet_pre_defini = new Trajet_Pre_Defini($result['id']);
 
@@ -100,13 +101,21 @@ class Trajet_Pre_Defini {
 		$lieu_1 = $dbh->quote(mb_strtoupper(stripAccents($lieu_1)));
 		$lieu_2 = $dbh->quote(mb_strtoupper(stripAccents($lieu_2)));
 
+		if ($lieu_1 < $lieu_2) {
+			$final_lieu_1 = $lieu_1;
+			$final_lieu_2 = $lieu_2;
+		} else {
+			$final_lieu_1 = $lieu_2;
+			$final_lieu_2 = $lieu_1;
+		}
+
 		//creation de la nouvelle entite dans la db
 		if ($src = '') {
 			$sql = "INSERT INTO trajet_pre_defini (lieu_1, lieu_2, distance) ";
-			$sql .= "VALUES ($lieu_1, $lieu_2, $distance)";
+			$sql .= "VALUES ($final_lieu_1, $final_lieu_2, $distance)";
 		} elseif ($src = 'gmaps') {
 			$sql = "INSERT INTO trajet_pre_defini (lieu_1, lieu_2, distance, distance_google_maps) ";
-			$sql .= "VALUES ($lieu_1, $lieu_2, $distance, $distance)";
+			$sql .= "VALUES ($final_lieu_1, $final_lieu_2, $distance, $distance)";
 		} else {
 
 		}
@@ -122,7 +131,7 @@ class Trajet_Pre_Defini {
 
 
 	// $lieu_1 < $lieu_2
-	public static function opti_find_combination($lieu_1, $lieu_2) { //autorise la reception d'un object contact
+	public static function opti_find_combination($lieu_1, $lieu_2) {
 
 		global $dbh;
 
@@ -313,7 +322,7 @@ class Trajet_Pre_Defini {
 
 
 	public static function download_distance_from_google_maps($adresse1, $npa1, $ville1, $pays1, $adresse2, $npa2, $ville2, $pays2, $create_entry_trajet_pre_defini=TRUE) {
-		
+
 		if (checkInternetConnection('www.google.ch')) {
 
 			// l'adresse est facultative
@@ -347,30 +356,30 @@ class Trajet_Pre_Defini {
 			if ($pays2 != '') {
 				$pays2_without_accent = str_replace(' ', '+', stripAccents($pays2));
 			}
-			
+
 			global $cfg;
 			//$url='http://maps.google.com/maps/api/directions/xml?language=fr&origin=' . $adresse1_without_accent . $ville1_without_accent . $pays1_without_accent . '&destination=' . $adresse2_without_accent . $ville2_without_accent . $pays2_without_accent . '&sensor=false';
 			$url='https://maps.googleapis.com/maps/api/directions/xml?language=fr&origin=' . $adresse1_without_accent . $ville1_without_accent . $pays1_without_accent . '&destination=' . $adresse2_without_accent . $ville2_without_accent . $pays2_without_accent . '&sensor=false&key=' . $cfg['APIGOOG']['apikey'];
-			
-			
+
+
 			//$ch = curl_init();
 			//curl_setopt($ch, CURLOPT_URL, $url);
 			//curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			//curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 			//curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 			//$xml = curl_exec($ch);
-			
-			//return $xml; 
-			
+
+			//return $xml;
+
 			//curl_close($ch);
-			
+
 			$arrContextOptions=array(
 				"ssl"=>array(
 					"verify_peer"=>false,
 					"verify_peer_name"=>false,
 				),
-			); 
-			
+			);
+
 			$xml=file_get_contents($url, false, stream_context_create($arrContextOptions));
 			$root = simplexml_load_string($xml);
 

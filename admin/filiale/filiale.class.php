@@ -1843,8 +1843,10 @@ class Filiale {
 
 				$data_facturation_transports_csv = array();
 
+				$load_needed_class_and_interface = load_class_and_interface(array('Trajet_Pre_Defini'));
+
 				// csv headers
-				$data_facturation_transports_csv[] = array("DO_NODOC", "DO_TYPE", "DO_DATE1", "DO_TIME", "DO_REF1", "DO_MONTANT", "DO_COMPTE", "DO_REF6", "AD_CODE", "AD_NOM", "AD_PRENOM", "AD_RUE_1", "AD_RUE_2", "AD_NPA", "AD_VILLE", "AD_ADR2", "DL_NOLIGNE", "DL_DETTYP", "DL_ARTCODE", "DL_DESC", "DL_DATE1", "DL_QTE1", "DL_PRIX", "DL_UNITE", "DL_MONTANT");
+				$data_facturation_transports_csv[] = array("DO_NODOC", "DO_TYPE", "DO_DATE1", "DO_TIME", "DO_REF1", "DO_MONTANT", "DO_COMPTE", "DO_REF6", "AD_CODE", "AD_TITRE", "AD_NOM", "AD_PRENOM", "AD_RUE_1", "AD_RUE_2", "AD_NPA", "AD_VILLE", "AD_ADR2", "AD_GRPTXT", "AD_UPD", "DL_NOLIGNE", "DL_DETTYP", "DL_ARTCODE", "DL_DESC", "DL_DATE1", "DL_QTE1", "DL_PRIX", "DL_UNITE", "DL_MONTANT", "DEBUG_datetime", "DEBUG_nbreKm", "DEBUG_storedCost", "DEBUG_depart", "DEBUG_arrivee", "DEBUG_distanceVille1Ville2", "DEBUG_distanceVille1Ville2Forfait", "DEBUG_checkDistance");
 
 				foreach ($result as $testtest => $facture_individuelle ) {
 
@@ -1913,7 +1915,10 @@ class Filiale {
 							$tmp_beneficiaire_adresse = $tmp_beneficiaire->get_adresse_facturation();
 
 							if (isset($tmp_beneficiaire_adresse['nom_complet']['titre'])) {
+								$tmp_beneficiaire_titre = $tmp_beneficiaire_adresse['nom_complet']['titre'];
 								$pdf->CreateTextBox($tmp_beneficiaire_adresse['nom_complet']['titre'], $posX_beneficiaire, $posY_beneficiaire, 80, 10, 10);
+							} else {
+								$tmp_beneficiaire_titre = '';
 							}
 							$pdf->CreateTextBox(mb_strtoupper(stripAccents($tmp_beneficiaire_adresse['nom_complet']['nom'])) . ' ' . $tmp_beneficiaire_adresse['nom_complet']['prenom'], $posX_beneficiaire, $posY_beneficiaire+5, 80, 10, 10, 'B');
 
@@ -1985,6 +1990,7 @@ class Filiale {
 							//$depart = 'Domicile (' . mb_strtoupper(stripAccents($point_depart['ville'])) . ')';
 							$depart =  mb_strtoupper(stripAccents($point_depart['ville']));
 						}
+						$depart_ville = mb_strtoupper(stripAccents($point_depart['ville']));
 
 						if ($point_arrivee['type'] == 'lieu') {
 							$tmp_lieu = new Lieu($point_arrivee['id']);
@@ -2000,6 +2006,7 @@ class Filiale {
 							//$arrivee = 'Domicile (' . mb_strtoupper(stripAccents($point_arrivee['ville'])) . ')';
 							$arrivee =  mb_strtoupper(stripAccents($point_arrivee['ville']));
 						}
+						$arrivee_ville = mb_strtoupper(stripAccents($point_arrivee['ville']));
 
 						//$pdf->CreateTextBox(strtoupper(stripAccents($point_depart['ville'])) . ' -> ' . strtoupper(stripAccents($point_arrivee['ville'])), $c_trajet, $currY, 20, 10, 10, '', 'L');
 						$pdf->CreateTextBox($depart . ' -> ' . $arrivee, $c_trajet, $currY, 20, 10, 10, '', 'L');
@@ -2009,6 +2016,7 @@ class Filiale {
 							$total = $total + $course_individuelle['cout_trajet'];
 
 							$currY += 5;
+							$tmp_transport_raison = ucfirst($tmp_transport_categorie->get_nom());
 							$pdf->CreateTextBox(ucfirst($tmp_transport_categorie->get_nom()), $c_trajet, $currY, 20, 10, 10, '', 'L');
 
 
@@ -2031,35 +2039,96 @@ class Filiale {
 
 						// decision tree article, nbreUnite, prixUnite
 						//$tmp_filiale_facturation = new Filiale($_SESSION['filiale']['id']);
-						if ( mb_strtoupper(stripAccents($point_depart['ville'])) == mb_strtoupper(stripAccents($point_arrivee['ville'])) || $course_individuelle['nbre_kilometres'] < 10 ) {
+						if ($depart_ville < $arrivee_ville ) {
+							$ville1 = $depart_ville;
+							$ville2 = $arrivee_ville;
+						} else {
+							$ville2 = $depart_ville;
+							$ville1 = $arrivee_ville;
+						}
+
+						if ( str_replace(" ", "", $ville1) == str_replace(" ", "", $ville2) ) {
+							$facturation_distance_ville1_ville2 = 0.0;
+							$facturation_distance_ville1_ville2_forfait = 10;
+
+							if ($course_individuelle['nbre_kilometres'] > 10 && $course_individuelle['nbre_kilometres'] != $facturation_distance_ville1_ville2_forfait) {
+								$facturation_distanceCheck = "#mismatch";
+							} else {
+								$facturation_distanceCheck = "";
+							}
+
+						} else {
+							$distance_trajet_pre_defini = Trajet_Pre_Defini::opti_find_combination($ville1, $ville2);
+							if ($distance_trajet_pre_defini && is_numeric($distance_trajet_pre_defini['distance'])) {
+								//echo "found in ville->ville, no google was necessary";
+								$facturation_distance_ville1_ville2 = 2.0 * ceil($distance_trajet_pre_defini['distance']);
+								$facturation_distance_ville1_ville2_forfait = $facturation_distance_ville1_ville2;
+
+								if ($course_individuelle['nbre_kilometres'] > 10 && $course_individuelle['nbre_kilometres'] != $facturation_distance_ville1_ville2_forfait) {
+									$facturation_distanceCheck = "#mismatch";
+								} else {
+									$facturation_distanceCheck = "";
+								}
+
+							} else {
+								//$facturation_distance_ville1_ville2 = "#N/A";
+								//$facturation_distance_ville1_ville2_forfait = "#N/A";
+								$facturation_distance_ville1_ville2 = $course_individuelle['nbre_kilometres'];
+								if ($facturation_distance_ville1_ville2 <= 10) {
+									$facturation_distance_ville1_ville2_forfait = 10;
+								}
+								$facturation_distanceCheck = "#notInDb";
+							}
+						}
+
+
+						if ($tmp_beneficiaire->has_repondant() == False) {
+							$tmp_beneficiaire_adresseType = 'PASSAGER';
+
+							$facturation_transport_pour = '';
+
+						} else {
+							$tmp_beneficiaire_adresseType = 'REPONDANT';
+							$tmp_beneficiaire_adresseType = 'PASSAGER';
+
+							$facturation_transport_pour = "Transport pour : " . mb_convert_encoding(mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) . ' ' . $tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8');
+						}
+
+						//mb_convert_encoding($tmp_transport_raison, 'ISO-8859-1', 'UTF-8')
+						//$facturation_description = mb_convert_encoding($tmp_transport_raison, 'ISO-8859-1', 'UTF-8') . ' ' . mb_convert_encoding($depart, 'ISO-8859-1', 'UTF-8') . " -> " . mb_convert_encoding($arrivee, 'ISO-8859-1', 'UTF-8');
+						$facturation_description = date_yyyymmdd_to_ddmmyyyy($course_individuelle['date_transport']) . ' ' . time_hhmmss_to_hhmm($course_individuelle['heure_debut']) . ' ' . mb_convert_encoding($tmp_transport_raison, 'ISO-8859-1', 'UTF-8') . ' ' . mb_convert_encoding($depart, 'ISO-8859-1', 'UTF-8') . " -> " . mb_convert_encoding($arrivee, 'ISO-8859-1', 'UTF-8');
+						//if ( mb_strtoupper(stripAccents($point_depart['ville'])) == mb_strtoupper(stripAccents($point_arrivee['ville'])) || $course_individuelle['nbre_kilometres'] <= 10 ) {
+						if ( mb_strtoupper(stripAccents($point_depart['ville'])) == mb_strtoupper(stripAccents($point_arrivee['ville'])) || $facturation_distance_ville1_ville2_forfait <= 10 ) {
 							//forfait
 							if ($course_individuelle['duree_approximative'] > 2) {
 								$facturation_produit = "DOUBLEFO";
 								$facturation_unite = "FORFAIT";
 								$facturation_nbre_unite = 1;
 								$facturation_prix_unite = 2.0 * $tmp_filiale->get_standard_prix_forfait_min();
-								$facturation_description = "Transport ". mb_convert_encoding($depart, 'ISO-8859-1', 'UTF-8') . " -> " . mb_convert_encoding($arrivee, 'ISO-8859-1', 'UTF-8') . " (Forfait double)";
+								$facturation_description .= " (Forfait double)";
 							} else {
 								$facturation_produit = "FORFAIT";
 								$facturation_unite = "FORFAIT";
 								$facturation_nbre_unite = 1;
 								$facturation_prix_unite = $tmp_filiale->get_standard_prix_forfait_min();
-								$facturation_description = "Transport ". mb_convert_encoding($depart, 'ISO-8859-1', 'UTF-8') . " -> " . mb_convert_encoding($arrivee, 'ISO-8859-1', 'UTF-8') . " (Forfait)";
+								$facturation_description .= " (Forfait)";
 							}
 						} else {
 							// prix au km
 							if ($course_individuelle['duree_approximative'] > 2) {
 								$facturation_produit = "DOUBLEKM";
 								$facturation_unite = "KM";
-								$facturation_nbre_unite = $course_individuelle['nbre_kilometres'];
+								//$facturation_nbre_unite = $course_individuelle['nbre_kilometres'];
+								$facturation_nbre_unite = $facturation_distance_ville1_ville2_forfait;
 								$facturation_prix_unite = 2.0 * $tmp_filiale->get_standard_prix_km();
-								$facturation_description = "Transport ". mb_convert_encoding($depart, 'ISO-8859-1', 'UTF-8') . " -> " . mb_convert_encoding($arrivee, 'ISO-8859-1', 'UTF-8') . ' ' . number_format($course_individuelle['nbre_kilometres'], 0) . 'KM ' . "(Double)";
+								$facturation_description .=  " (Double)";
 							} else {
 								$facturation_produit = "KM";
 								$facturation_unite = "KM";
-								$facturation_nbre_unite = $course_individuelle['nbre_kilometres'];
+								//$facturation_nbre_unite = $course_individuelle['nbre_kilometres'];
+								$facturation_nbre_unite = $facturation_distance_ville1_ville2_forfait;
 								$facturation_prix_unite = $tmp_filiale->get_standard_prix_km();
-								$facturation_description = "Transport ". mb_convert_encoding($depart, 'ISO-8859-1', 'UTF-8') . " -> " . mb_convert_encoding($arrivee, 'ISO-8859-1', 'UTF-8') . ' ' . number_format($course_individuelle['nbre_kilometres'], 0) . 'KM';
+								$facturation_description .= '';
 							}
 						}
 
@@ -2073,14 +2142,17 @@ class Filiale {
 							0,
 							$compte_paiement,
 							"Transport pour: " . mb_convert_encoding(mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) . ' ' . $tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
-							"PASSAGER" . $facture_individuelle['id_beneficiaire'],
+							$tmp_beneficiaire_adresseType . $facture_individuelle['id_beneficiaire'],
+							mb_convert_encoding($tmp_beneficiaire_titre, 'ISO-8859-1', 'UTF-8'),
 							mb_convert_encoding($tmp_beneficiaire_adresse['nom_complet']['nom'], 'ISO-8859-1', 'UTF-8'),
 							mb_convert_encoding($tmp_beneficiaire_adresse['nom_complet']['prenom'], 'ISO-8859-1', 'UTF-8'),
 							mb_convert_encoding($tmp_beneficiaire_adresse['adresse'], 'ISO-8859-1', 'UTF-8'),
 							mb_convert_encoding($tmp_beneficiaire_adresse['adresse_complement'], 'ISO-8859-1', 'UTF-8'),
 							$tmp_beneficiaire_adresse['npa'],
 							mb_convert_encoding($tmp_beneficiaire_adresse['ville'], 'ISO-8859-1', 'UTF-8'),
-							"Transport pour : " . mb_convert_encoding(mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) . ' ' . $tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
+							$facturation_transport_pour,
+							'PASSAGER',
+							2,
 							1,
 							0,
 							$facturation_produit,
@@ -2089,7 +2161,15 @@ class Filiale {
 							$facturation_nbre_unite,
 							$facturation_prix_unite,
 							$facturation_unite,
-							round($course_individuelle['cout_trajet'],2)
+							$facturation_nbre_unite * $facturation_prix_unite,
+							date( 'Y-m-d h:i:s a', time() ),
+							$course_individuelle['nbre_kilometres'],
+							round( $course_individuelle['cout_trajet'], 2),
+							mb_convert_encoding($ville1, 'ISO-8859-1', 'UTF-8'),
+							mb_convert_encoding($ville2, 'ISO-8859-1', 'UTF-8'),
+							$facturation_distance_ville1_ville2,
+							$facturation_distance_ville1_ville2_forfait,
+							$facturation_distanceCheck
 						);
 
 					} // boucle courses individuelles du passager

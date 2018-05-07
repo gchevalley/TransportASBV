@@ -232,7 +232,7 @@ class Beneficiaire implements Contact {
 		 */
 		if (checkInternetConnection('maps.google.com')) {
 			$load_needed_class_and_interface = load_class_and_interface(array('Geocode'));
-			$array_coor = Geocode::find_combination($adresse, $npa, $ville, $pays, TRUE);
+			//$array_coor = Geocode::find_combination($adresse, $npa, $ville, $pays, TRUE);
 		}
 
 
@@ -434,7 +434,7 @@ class Beneficiaire implements Contact {
 	 * rapportant au repondant est non nulle
 	 */
 	public function has_repondant() {
-		
+
 		if (isset($this->array_repondant[0]) && $this->array_repondant[0] instanceof Repondant) {
 			//return TRUE;
 			return $this->array_repondant[0]->get_id();
@@ -962,6 +962,7 @@ class Beneficiaire implements Contact {
 			// si autre adresse pour la facturation
 			$html_code .= '<p>';
 				$html_code .= '<label for="autre_adresse_facturation">Autre adresse pour la facturation</label>';
+				$html_code .= '<input type="hidden" value="0" name="autre_adresse_facturation">';
 				if ( isset($data_to_display['autre_adresse_facturation']['value']) ) {
 					$html_code .= add_FormElement_input('checkbox', 'autre_adresse_facturation', '',  $data_to_display['autre_adresse_facturation']['value']);
 				} else {
@@ -1556,8 +1557,8 @@ class Beneficiaire implements Contact {
 			$html_code .= '</script>';
 
 		}
-		
-		
+
+
 		//partie sur le repondant
 		if ($tmp_beneficiaire->has_repondant()) {
 			$html_code .= '<h1>Répondant</h1>';
@@ -1688,7 +1689,7 @@ class Beneficiaire implements Contact {
 
 			$html_code .= '</p>';
 		} // partie repondant
-		
+
 
 		//transport futurs deja prevu
 		load_class_and_interface(array('Transport'));
@@ -1718,8 +1719,8 @@ class Beneficiaire implements Contact {
 		$sth = $dbh->query($sql);
 		$result_transport_with_driver = $sth->fetchAll(PDO::FETCH_ASSOC);
 
-		
-		
+
+
 		if (count($result) > 0) {
 
 			$html_code .= '<br />';
@@ -1823,7 +1824,7 @@ class Beneficiaire implements Contact {
 
 		$sth = $dbh->query($sql);
 		$result = $sth->fetchAll(PDO::FETCH_ASSOC);
-		
+
 		if (count($result) > 0) {
 			$html_code .= '<br />';
 			$html_code .= '<h1>' . $nbre_histo_transport_a_afficher . ' derniers transports <em>effectués</em></h1>';
@@ -1837,7 +1838,7 @@ class Beneficiaire implements Contact {
 					$html_code .= '<th></th>'; //Modifier
 					$html_code .= '<th></th>'; //Annuler
 				$html_code .= '</thead>';
-				
+
 				$html_code .= '<tbody>';
 					foreach ($result as $row) {
 
@@ -1855,12 +1856,12 @@ class Beneficiaire implements Contact {
 							$html_code .= '<td>';
 								$html_code .= '<a href="?module=benevole&amp;action=view&amp;id=' . $row['id_transporteur'] . '">';
 
-									
+
 									$tmp_transporteur = new Transporteur($row['id_transporteur']); // n est peut etre plus un chauffeur...
 									$tmp_transporteur_nom_complet = $tmp_transporteur->get_nom_complet();
 
 									$html_code .= mb_strtoupper(stripAccents($tmp_transporteur_nom_complet['nom'])) . ', ' . $tmp_transporteur_nom_complet['prenom'];
-									
+
 								$html_code .= '</a>';
 							$html_code .= '</td>';
 
@@ -1947,14 +1948,14 @@ class Beneficiaire implements Contact {
 				}
 
 				//$distance = ceil(Trajet_Pre_Defini::download_distance_from_google_maps($point_depart['adresse'], $point_depart['npa'], $point_depart['ville'], $point_depart['pays'], $point_arrivee['adresse'], $point_arrivee['npa'], $point_arrivee['ville'], $point_arrivee['pays'], FALSE));
-				
-				
+
+
 				//$html_code .= 'HHHHEEELLLLLO';
 				//$html_code .= Trajet_Pre_Defini::download_distance_from_google_maps( '' , $point_depart['npa'], $point_depart['ville'], $point_depart['pays'], '', $point_arrivee['npa'], $point_arrivee['ville'], $point_arrivee['pays'], FALSE);
-				
+
 				$distance = ceil(Trajet_Pre_Defini::download_distance_from_google_maps( '' , $point_depart['npa'], $point_depart['ville'], $point_depart['pays'], '', $point_arrivee['npa'], $point_arrivee['ville'], $point_arrivee['pays'], FALSE));
-				
-				
+
+
 				$tmp_filiale = new Filiale($_SESSION['filiale']['id']);
 				$prix_km = $tmp_filiale->get_standard_prix_km();
 				$tx_remboursement_chauffeur = $tmp_filiale->get_standard_taux_compenation();

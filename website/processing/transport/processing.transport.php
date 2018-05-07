@@ -207,7 +207,6 @@ switch ($action) {
 		} else {
 			unset($_SESSION['last_page']);
 			$tmp_transport = new Transport(0, $data_to_display['id_beneficiaire']['value'], $data_to_display['id_categorie']['value'], $data_to_display['date_transport']['value'], $data_to_display['heure_debut']['value'], $data_to_display['duree_approximative']['value'], 1, $data_to_display['point_depart']['value'], $data_to_display['point_arrivee']['value'], 0, $data_to_display['aller_retour']['value'], 0, 0, $data_to_display['info_diverses']['value'], 0, $data_to_display['id_transporteur']['value']);
-
 			$_SESSION['last_transport']['id'] = $tmp_transport->get_id();
 			$_SESSION['last_transport']['id_beneficiaire'] = $data_to_display['id_beneficiaire']['value'];
 

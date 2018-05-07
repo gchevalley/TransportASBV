@@ -103,7 +103,7 @@ class Transport {
 		$this->is_archive = $result['is_archive'];
 		$this->is_annule = $result['is_annule'];
 		$this->raison_annulation = $result['raison_annulation'];
-		
+
 		$this->mountBeneficiaire();
 		$this->mountFiliale();
 		$this->mountCategorie();
@@ -221,6 +221,7 @@ class Transport {
 
 			$load_needed_class_and_interface = load_class_and_interface(array('Trajet_Pre_Defini'));
 			$distance_trajet_pre_defini = Trajet_Pre_Defini::opti_find_combination($ville_1, $ville_2);
+			//echo var_dump($distance_trajet_pre_defini);
 			if ($distance_trajet_pre_defini && is_numeric($distance_trajet_pre_defini['distance'])) {
 				//echo "found in ville->ville, no google was necessary";
 				$nbre_kilometres = ceil($distance_trajet_pre_defini['distance']);
@@ -238,12 +239,7 @@ class Transport {
 				}
 			}
 
-
-
 		}
-
-
-
 
 		if ($nbre_kilometres === false) {
 			$nbre_kilometres = 0;
