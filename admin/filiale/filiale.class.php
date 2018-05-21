@@ -1846,7 +1846,9 @@ class Filiale {
 				$load_needed_class_and_interface = load_class_and_interface(array('Trajet_Pre_Defini'));
 
 				// csv headers
-				$data_facturation_transports_csv[] = array("DO_NODOC", "DO_TYPE", "DO_DATE1", "DO_TIME", "DO_REF1", "DO_MONTANT", "DO_COMPTE", "DO_REF6", "AD_CODE", "AD_TITRE", "AD_NOM", "AD_PRENOM", "AD_RUE_1", "AD_RUE_2", "AD_NPA", "AD_VILLE", "AD_ADR2", "AD_GRPTXT", "AD_UPD", "DL_NOLIGNE", "DL_DETTYP", "DL_ARTCODE", "DL_DESC", "DL_DATE1", "DL_QTE1", "DL_PRIX", "DL_UNITE", "DL_MONTANT", "DEBUG_datetime", "DEBUG_nbreKm", "DEBUG_storedCost", "DEBUG_depart", "DEBUG_arrivee", "DEBUG_distanceVille1Ville2", "DEBUG_distanceVille1Ville2Forfait", "DEBUG_checkDistance");
+				$data_facturation_transports_csv[] = array("DO_NODOC", "DO_TYPE", "DO_DATE1", "DO_TIME", "DO_REF1", "DO_MONTANT", "DO_COMPTE", "AD_CODE", "AD_TITRE", "AD_NOM", "AD_PRENOM", "AD_RUE_1", "AD_RUE_2", "AD_NPA", "AD_VILLE", "AD_ADR2", "AD_GRPTXT", "AD_UPD", "DL_NOLIGNE", "DL_DETTYP", "DL_ARTCODE", "DL_DESC", "DL_DATE1", "DL_QTE1", "DL_PRIX", "DL_UNITE", "DL_MONTANT", "DEBUG_datetime", "DEBUG_nbreKm", "DEBUG_storedCost", "DEBUG_depart", "DEBUG_arrivee", "DEBUG_distanceVille1Ville2", "DEBUG_distanceVille1Ville2Forfait", "DEBUG_checkDistance");
+
+				$data_facturation_repondant = array();
 
 				foreach ($result as $testtest => $facture_individuelle ) {
 
@@ -1894,6 +1896,58 @@ class Filiale {
 						$date_month_txt = $data_to_display['facturation_month']['value'];
 					}
 
+					if ($tmp_beneficiaire->has_repondant() == True) {
+							$adresse_repondant = $tmp_beneficiaire->get_adresse_facturation();
+
+							if (isset($adresse_repondant['nom_complet']['prenom'])) {
+								$facturation_repondant_prenom = $adresse_repondant['nom_complet']['prenom'];
+							} else {
+								$facturation_repondant_prenom = '';
+							}
+
+							if (isset($adresse_repondant['nom_complet']['nom'])) {
+								$facturation_repondant_nom = $adresse_repondant['nom_complet']['nom'];
+							} else {
+								$facturation_repondant_nom = '';
+							}
+
+							if (isset($adresse_repondant['adresse'])) {
+								$facturation_repondant_adresse = $adresse_repondant['adresse'];
+							} else {
+								$facturation_repondant_adresse = '';
+							}
+
+							if (isset($adresse_repondant['adresse_complement'])) {
+								$facturation_repondant_adresse_complement = $adresse_repondant['adresse_complement'];
+							} else {
+								$facturation_repondant_adresse_complement = '';
+							}
+
+							if (isset($adresse_repondant['npa'])) {
+								$facturation_repondant_npa = $adresse_repondant['npa'];
+							} else {
+								$facturation_repondant_npa = '';
+							}
+
+							if (isset($adresse_repondant['ville'])) {
+								$facturation_repondant_ville = $adresse_repondant['ville'];
+							} else {
+								$facturation_repondant_ville = '';
+							}
+
+
+							$data_facturation_repondant[] = array(
+								 mb_convert_encoding($tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
+								 mb_convert_encoding($tmp_beneficiaire_nom_complet['nom'], 'ISO-8859-1', 'UTF-8'),
+								 "",
+								 mb_convert_encoding( $facturation_repondant_prenom, 'ISO-8859-1', 'UTF-8'),
+								 mb_convert_encoding( $facturation_repondant_nom, 'ISO-8859-1', 'UTF-8'),
+								 mb_convert_encoding( $facturation_repondant_adresse, 'ISO-8859-1', 'UTF-8'),
+								 mb_convert_encoding( $facturation_repondant_adresse_complement, 'ISO-8859-1', 'UTF-8'),
+								 $facturation_repondant_npa,
+								 $facturation_repondant_ville
+							);
+					}
 
 
 					$total = 0;
@@ -2081,14 +2135,21 @@ class Filiale {
 							}
 						}
 
+						$tmp_beneficiaire_adresse_winbiz = $tmp_beneficiaire->get_adresse();
+						// patch content
+						if ( !isset($tmp_beneficiaire_adresse_winbiz['adresse_complement']) ) {
+							$tmp_beneficiaire_adresse_winbiz['adresse_complement'] = '';
+						}
+
 
 						if ($tmp_beneficiaire->has_repondant() == False) {
 							$tmp_beneficiaire_adresseType = 'PASSAGER';
 
-							$facturation_transport_pour = '';
+							//$facturation_transport_pour = '';
+							$facturation_transport_pour = "Transport pour : " . mb_convert_encoding(mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) . ' ' . $tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8');
 
 						} else {
-							$tmp_beneficiaire_adresseType = 'REPONDANT';
+							//$tmp_beneficiaire_adresseType = 'REPONDANT';
 							$tmp_beneficiaire_adresseType = 'PASSAGER';
 
 							$facturation_transport_pour = "Transport pour : " . mb_convert_encoding(mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) . ' ' . $tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8');
@@ -2132,6 +2193,12 @@ class Filiale {
 							}
 						}
 
+						// patch db
+						if ( $facturation_distanceCheck == "#mismatch" ) {
+							$sql_query_update_missmatch = "UPDATE transport SET nbre_kilometres=" . $facturation_distance_ville1_ville2_forfait . ", cout_trajet=" . ($facturation_nbre_unite * $facturation_prix_unite) . " WHERE id=" . $course_individuelle['id'];
+							$dbh->exec($sql_query_update_missmatch);
+						}
+
 						$compte_paiement = 1100;
 						$data_facturation_transports_csv[] = array(
 							$course_individuelle['id'],
@@ -2141,15 +2208,15 @@ class Filiale {
 							'TRANSPORT' . $course_individuelle['id'],
 							0,
 							$compte_paiement,
-							"Transport pour: " . mb_convert_encoding(mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) . ' ' . $tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
+							//"Transport pour: " . mb_convert_encoding(mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom'])) . ' ' . $tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
 							$tmp_beneficiaire_adresseType . $facture_individuelle['id_beneficiaire'],
 							mb_convert_encoding($tmp_beneficiaire_titre, 'ISO-8859-1', 'UTF-8'),
-							mb_convert_encoding($tmp_beneficiaire_adresse['nom_complet']['nom'], 'ISO-8859-1', 'UTF-8'),
-							mb_convert_encoding($tmp_beneficiaire_adresse['nom_complet']['prenom'], 'ISO-8859-1', 'UTF-8'),
-							mb_convert_encoding($tmp_beneficiaire_adresse['adresse'], 'ISO-8859-1', 'UTF-8'),
-							mb_convert_encoding($tmp_beneficiaire_adresse['adresse_complement'], 'ISO-8859-1', 'UTF-8'),
-							$tmp_beneficiaire_adresse['npa'],
-							mb_convert_encoding($tmp_beneficiaire_adresse['ville'], 'ISO-8859-1', 'UTF-8'),
+							mb_convert_encoding($tmp_beneficiaire_adresse_winbiz['nom_complet']['nom'], 'ISO-8859-1', 'UTF-8'),
+							mb_convert_encoding($tmp_beneficiaire_adresse_winbiz['nom_complet']['prenom'], 'ISO-8859-1', 'UTF-8'),
+							mb_convert_encoding($tmp_beneficiaire_adresse_winbiz['adresse'], 'ISO-8859-1', 'UTF-8'),
+							mb_convert_encoding($tmp_beneficiaire_adresse_winbiz['adresse_complement'], 'ISO-8859-1', 'UTF-8'),
+							$tmp_beneficiaire_adresse_winbiz['npa'],
+							mb_convert_encoding($tmp_beneficiaire_adresse_winbiz['ville'], 'ISO-8859-1', 'UTF-8'),
 							$facturation_transport_pour,
 							'PASSAGER',
 							2,
@@ -2191,6 +2258,23 @@ class Filiale {
 
 				} // boucle passagers avec facture ce mois
 
+
+				$sql_firstTime = "SELECT beneficiaire.* , MIN(transport.date_transport) AS firstDate ";
+				$sql_firstTime .= " FROM transport, transport_transporteur, beneficiaire ";
+				$sql_firstTime .= " WHERE transport.id = transport_transporteur.id_transport ";
+				$sql_firstTime .= " AND transport.id_beneficiaire = beneficiaire.id ";
+				$sql_firstTime .= " AND is_cloture=1 ";
+				$sql_firstTime .= " AND transport.is_annule=0 ";
+				$sql_firstTime .= " GROUP BY transport.id_beneficiaire ";
+				$sql_firstTime .= " HAVING YEAR(firstDate)=" . $data_to_display['facturation_year']['value'];
+				$sql_firstTime .= " ANd MONTH(firstDate)=" . $data_to_display['facturation_month']['value'];
+
+
+				$sth = $dbh->query($sql_firstTime);
+				$new_beneficaire_mois_facturation = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+
+
 				//Close and output PDF document
 				$projet_name = substr($_SERVER['SCRIPT_NAME'], 1, (strpos($_SERVER['SCRIPT_NAME'], '/', 1))-1);
 				$server_name = $_SERVER['SERVER_NAME'];
@@ -2214,6 +2298,8 @@ class Filiale {
 					mkdir('../' . $directory_facturation . '/' . $data_to_display['facturation_year']['value'] . '/' . $data_to_display['facturation_month']['value']);
 				}
 
+
+
 				if (!isset($data_to_display['id_beneficiaire']['value'])) {
 					//facturation integral du mois
 					$pdf_file = 'FacturationPassagers' . $data_to_display['facturation_year']['value'] . '_'. $data_to_display['facturation_month']['value'] . '.pdf';
@@ -2225,6 +2311,38 @@ class Filiale {
 					}
 					fclose($fp);
 
+					if (count($new_beneficaire_mois_facturation) > 0) {
+						$data_facturation_nouveaux_passagers_csv = array();
+						$csv_new_passager = 'FacturationPassagers' . $data_to_display['facturation_year']['value'] . '_'. $data_to_display['facturation_month']['value'] . '_NouveauxPassagers.csv';
+						foreach ($new_beneficaire_mois_facturation as $tmp_new_passager) {
+							$data_facturation_nouveaux_passagers_csv[] = array(
+								mb_convert_encoding($tmp_new_passager['prenom'], 'ISO-8859-1', 'UTF-8'),
+								mb_convert_encoding($tmp_new_passager['nom'], 'ISO-8859-1', 'UTF-8'),
+								mb_convert_encoding($tmp_new_passager['adresse'], 'ISO-8859-1', 'UTF-8'),
+								mb_convert_encoding($tmp_new_passager['npa'], 'ISO-8859-1', 'UTF-8'),
+								mb_convert_encoding($tmp_new_passager['ville'], 'ISO-8859-1', 'UTF-8')
+							);
+						}
+
+						$fp = fopen($base_dir . '/' . $directory_facturation . '/' . $data_to_display['facturation_year']['value'] . '/' . $data_to_display['facturation_month']['value'] . '/' . $csv_new_passager, 'w');
+						foreach ($data_facturation_nouveaux_passagers_csv as $tmp_new_passager_row) {
+							fputcsv($fp, $tmp_new_passager_row, ";");
+						}
+						fclose($fp);
+					}
+
+
+
+					//$data_facturation_repondant
+					if (count($data_facturation_repondant) > 0) {
+						$csv_repondant = 'FacturationPassagers' . $data_to_display['facturation_year']['value'] . '_'. $data_to_display['facturation_month']['value'] . '_Repondants.csv';
+
+						$fp = fopen($base_dir . '/' . $directory_facturation . '/' . $data_to_display['facturation_year']['value'] . '/' . $data_to_display['facturation_month']['value'] . '/' . $csv_repondant, 'w');
+						foreach ($data_facturation_repondant as $tmp_passager_row) {
+							fputcsv($fp, $tmp_passager_row, ";");
+						}
+						fclose($fp);
+					}
 
 					if (isset($data_to_display['reload']['value']) && $data_to_display['reload']['value'] === FALSE) {
 
@@ -2344,6 +2462,7 @@ class Filiale {
 			//transport avec & sans chauffeur !
 			$result = $sth->fetchAll(PDO::FETCH_ASSOC);
 
+			$data_reboursement_transports_csv[] = array("DO_NODOC", "DO_TYPE", "DO_DATE1", "DO_REF1", "DO_MONTANT", "DO_COMPTE", "AD_CODE", "AD_TITRE", "AD_NOM", "AD_PRENOM", "AD_RUE_1", "AD_RUE_2", "AD_NPA", "AD_VILLE", "AD_GRPTXT", "AD_UPD", "DL_NOLIGNE", "DL_DETTYP", "DL_ARTCODE", "DL_DESC", "DL_DATE1", "DL_QTE1", "DL_PRIX", "DL_UNITE", "DL_MONTANT", "DO_BAN_PAY", "DEBUG_datetime", "DEBUG_courses", "DEBUG_nbreKm_reval", "DEBUG_storedKm", "DEBUG_storedCost", "DEBUG_transportId");
 
 			//presentation des resultats des mois choisis avec les differentes fonctionnalites de comptabilite
 			if (count($result) > 0) {
@@ -2420,7 +2539,17 @@ class Filiale {
 
 					$first_page = TRUE;
 					$total = 0;
+					$remboursement_csv_total_km = 0;
+					$remboursement_csv_nbre_course = 0;
+					$remboursement_csv_id_transport = '';
+					$remboursement_csv_transports_km = '';
+					$remboursement_csv_transports_km_reval = '';
+
 					foreach ($transports_beneficaire_mois_facturation as $course_individuelle) {
+
+						$remboursement_csv_nbre_course += 1;
+						$remboursement_csv_id_transport .= ' ' . $course_individuelle['id'];
+						$remboursement_csv_transports_km .= ' ' . $course_individuelle['nbre_kilometres'];
 
 						if ( $first_page === TRUE || $currY >= 268) {
 							$first_page = FALSE;
@@ -2444,6 +2573,38 @@ class Filiale {
 							} else {
 								$pdf->CreateTextBox($tmp_transporteur_adresse['adresse'], $posX_transporteur, $posY_transporteur+10, 80, 10, 10);
 								$pdf->CreateTextBox($tmp_transporteur_adresse['npa'] . ' ' . $tmp_transporteur_adresse['ville'], $posX_transporteur, $posY_transporteur+15, 80, 10, 10);
+							}
+
+							if (isset($tmp_transporteur_nom_complet['titre'])) {
+								$remboursement_csv_chauffeur_titre = $tmp_transporteur_nom_complet['titre'];
+							} else {
+								$remboursement_csv_chauffeur_titre = '';
+							}
+							$remboursement_csv_chauffeur_prenom =  $tmp_transporteur_nom_complet['prenom'];
+							$remboursement_csv_chauffeur_nom =  $tmp_transporteur_nom_complet['nom'];
+
+							if (isset($tmp_transporteur_adresse['adresse'])) {
+								$remboursement_csv_chauffeur_adresse = $tmp_transporteur_adresse['adresse'];
+							} else {
+								$remboursement_csv_chauffeur_adresse = '';
+							}
+
+							if (isset($tmp_transporteur_adresse['adresse_complement'])) {
+								$remboursement_csv_chauffeur_adresse_complement = $tmp_transporteur_adresse['adresse_complement'];
+							} else {
+								$remboursement_csv_chauffeur_adresse_complement = '';
+							}
+
+							if (isset($tmp_transporteur_adresse['npa'])) {
+								$remboursement_csv_chauffeur_npa = $tmp_transporteur_adresse['npa'];
+							} else {
+								$remboursement_csv_chauffeur_npa = '';
+							}
+
+							if (isset($tmp_transporteur_adresse['ville'])) {
+								$remboursement_csv_chauffeur_ville = $tmp_transporteur_adresse['ville'];
+							} else {
+								$remboursement_csv_chauffeur_ville = '';
 							}
 
 
@@ -2506,7 +2667,27 @@ class Filiale {
 							$currY = $currY+10;
 						}
 
-					}
+						if ($course_individuelle['nbre_kilometres'] < 10.0) {
+							if ($course_individuelle['duree_approximative'] > 2) {
+								$remboursement_distance_ville1_ville2_forfait = 20;
+							} else {
+								$remboursement_distance_ville1_ville2_forfait = 10;
+							}
+						} else {
+							//$remboursement_distance_ville1_ville2_forfait = $course_individuelle['nbre_kilometres'];
+
+							if ($course_individuelle['duree_approximative'] > 2) {
+								$remboursement_distance_ville1_ville2_forfait = 2.0 * $course_individuelle['nbre_kilometres'];
+							} else {
+								$remboursement_distance_ville1_ville2_forfait = $course_individuelle['nbre_kilometres'];
+							}
+
+						}
+
+						$remboursement_csv_total_km += $remboursement_distance_ville1_ville2_forfait;
+						$remboursement_csv_transports_km_reval .= ' ' . $remboursement_distance_ville1_ville2_forfait;
+
+					} // boucle course individuelle
 
 					if ($currY > 268) {
 						$pdf->AddPage();
@@ -2523,7 +2704,44 @@ class Filiale {
 					$pdf->CreateTextBox(number_format($total,2), $c_prix, $currY+5, 20, 10, 10, 'B', 'R');
 
 
-				}
+					$data_reboursement_transports_csv[] = array(
+						$date_year_txt . $date_month_txt . $tmp_transporteur->get_id_transporteur(),
+						44,
+						date('d.m.Y'),
+						'REMBOURSEMENT' . $date_year_txt . $date_month_txt . $tmp_transporteur->get_id_transporteur(),
+						arrondi($remboursement_csv_total_km * $tmp_filiale->get_standard_prix_km() * ($tmp_filiale->get_standard_taux_compenation() / 100.0), 0.1),
+						4000,
+						'CHAUFFEUR' . $tmp_transporteur->get_id_transporteur(),
+						mb_convert_encoding($remboursement_csv_chauffeur_titre, 'ISO-8859-1', 'UTF-8'),
+						mb_convert_encoding($remboursement_csv_chauffeur_nom, 'ISO-8859-1', 'UTF-8'),
+						mb_convert_encoding($remboursement_csv_chauffeur_prenom, 'ISO-8859-1', 'UTF-8'),
+						mb_convert_encoding($remboursement_csv_chauffeur_adresse, 'ISO-8859-1', 'UTF-8'),
+						mb_convert_encoding($remboursement_csv_chauffeur_adresse_complement, 'ISO-8859-1', 'UTF-8'),
+						$remboursement_csv_chauffeur_npa,
+						mb_convert_encoding($remboursement_csv_chauffeur_ville, 'ISO-8859-1', 'UTF-8'),
+						'CHAUFFEUR',
+						2,
+						1,
+						0,
+						'KM',
+						'Remboursement : ' . mb_convert_encoding(ucfirst($mois_txt), 'ISO-8859-1', 'UTF-8') . ' ' . $data_to_display['facturation_year']['value'],
+						date('d.m.Y'),
+						$remboursement_csv_total_km,
+						round($tmp_filiale->get_standard_prix_km() * ($tmp_filiale->get_standard_taux_compenation() / 100.0), 2),
+						"KM",
+						arrondi($remboursement_csv_total_km * $tmp_filiale->get_standard_prix_km() * ($tmp_filiale->get_standard_taux_compenation() / 100.0), 0.1),
+						"<iban=" . $tmp_transporteur->get_iban() . ">",
+						date( 'Y-m-d h:i:s a', time() ),
+						$remboursement_csv_nbre_course,
+						$remboursement_csv_transports_km_reval,
+						$remboursement_csv_transports_km,
+						$total,
+						$remboursement_csv_id_transport,
+					);
+
+
+
+				} // boucle remboursement des chauffeurs
 
 				//Close and output PDF document
 				$projet_name = substr($_SERVER['SCRIPT_NAME'], 1, (strpos($_SERVER['SCRIPT_NAME'], '/', 1))-1);
@@ -2551,6 +2769,13 @@ class Filiale {
 				if (!isset($data_to_display['id_transporteur']['value'])) {
 					//facturation integral du mois
 					$pdf_file = 'RemboursementTransporteurs' . $data_to_display['facturation_year']['value'] . '_'. $data_to_display['facturation_month']['value'] . '.pdf';
+					$csv_file = 'RemboursementTransporteurs' . $data_to_display['facturation_year']['value'] . '_'. $data_to_display['facturation_month']['value'] . '.csv';
+
+					$fp = fopen($base_dir . '/' . $directory_facturation . '/' . $data_to_display['facturation_year']['value'] . '/' . $data_to_display['facturation_month']['value'] . '/' . $csv_file, 'w');
+					foreach ($data_reboursement_transports_csv as $remboursement_chauffeur) {
+						fputcsv($fp, $remboursement_chauffeur, ";");
+					}
+					fclose($fp);
 
 					if (isset($data_to_display['reload']['value']) && $data_to_display['reload']['value'] === FALSE) {
 						$pdf->Output( $base_dir . '/' . $directory_facturation . '/' . $data_to_display['facturation_year']['value'] . '/' . $data_to_display['facturation_month']['value'] . '/' . $pdf_file, 'I');

@@ -629,13 +629,17 @@ class Transport {
 							$html_email .= format_titre($tmp_beneficiaire_nom_complet['titre']) . ' ' . mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom']));
 						$html_email .= '</td>';
 
-						$html_email .= '<td>';
-							$html_email .= format_tel($tmp_beneficiaire_tel['tel_fixe']);
-						$html_email .= '</td>';
+						if (isset($tmp_beneficiaire_tel['tel_fixe'])) {
+							$html_email .= '<td>';
+								$html_email .= format_tel($tmp_beneficiaire_tel['tel_fixe']);
+							$html_email .= '</td>';
+						}
 
-						$html_email .= '<td>';
-							$html_email .= format_tel($tmp_beneficiaire_tel['tel_mobile']);
-						$html_email .= '</td>';
+						if (isset($tmp_beneficiaire_tel['tel_mobile'])) {
+							$html_email .= '<td>';
+								$html_email .= format_tel($tmp_beneficiaire_tel['tel_mobile']);
+							$html_email .= '</td>';
+						}
 
 						$html_email .= '<td>';
 							$html_email .= mb_strtoupper(stripAccents($point_depart['ville']));
@@ -701,13 +705,17 @@ class Transport {
 						$html_email .= format_titre($tmp_beneficiaire_nom_complet['titre']) . ' ' . mb_strtoupper(stripAccents($tmp_beneficiaire_nom_complet['nom']));
 						$html_email .= '</td>';
 
-						$html_email .= '<td>';
-						$html_email .= format_tel($tmp_beneficiaire_tel['tel_fixe']);
-						$html_email .= '</td>';
+						if (isset($tmp_beneficiaire_tel['tel_fixe'])) {
+							$html_email .= '<td>';
+							$html_email .= format_tel($tmp_beneficiaire_tel['tel_fixe']);
+							$html_email .= '</td>';
+						}
 
-						$html_email .= '<td>';
-						$html_email .= format_tel($tmp_beneficiaire_tel['tel_mobile']);
-						$html_email .= '</td>';
+						if (isset($tmp_beneficiaire_tel['tel_mobile'])) {
+							$html_email .= '<td>';
+							$html_email .= format_tel($tmp_beneficiaire_tel['tel_mobile']);
+							$html_email .= '</td>';
+						}
 
 						$point_depart = unserialize($row['point_depart']);
 						$point_arrivee = unserialize($row['point_arrivee']);

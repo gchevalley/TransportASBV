@@ -503,6 +503,9 @@ class Benevole implements Contact {
 
 	} // class.Benevole.func.ajouterParticipationDansFiliale
 
+	public function get_iban() {
+		return $this->iban;
+	}
 
 	public function checkIsTransporteur($which_filiale=0) {
 		$load_needed_class_and_interface = load_class_and_interface(array('Transporteur'));
