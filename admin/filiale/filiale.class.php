@@ -2730,7 +2730,7 @@ class Filiale {
 						round($tmp_filiale->get_standard_prix_km() * ($tmp_filiale->get_standard_taux_compenation() / 100.0), 2),
 						"KM",
 						arrondi($remboursement_csv_total_km * $tmp_filiale->get_standard_prix_km() * ($tmp_filiale->get_standard_taux_compenation() / 100.0), 0.1),
-						"<iban=" . $tmp_transporteur->get_iban() . ">",
+						"<iban=" . $tmp_transporteur->get_iban() . "><communication1=" .  'Remboursement : ' . mb_convert_encoding(ucfirst($mois_txt), 'ISO-8859-1', 'UTF-8') . ' ' . $data_to_display['facturation_year']['value'] .  ">",
 						date( 'Y-m-d h:i:s a', time() ),
 						$remboursement_csv_nbre_course,
 						$remboursement_csv_transports_km_reval,

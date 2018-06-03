@@ -1955,7 +1955,7 @@ class Transport {
 		if (mb_strtoupper(stripAccents($array_ville_depart['ville'])) == 'GENEVE' || mb_strtoupper(stripAccents($array_ville_arrivee['ville'])) == 'GENEVE') {
 			return TRUE;
 		} else {
-			if ((($this->nbre_kilometres)/2) > 15 && (($this->nbre_kilometres)/2) < 33) {
+			if ((($this->nbre_kilometres)/2) > 20 && (($this->nbre_kilometres)/2) < 33) {
 				return TRUE;
 			} else {
 				return FALSE;

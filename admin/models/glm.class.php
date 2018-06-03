@@ -171,18 +171,37 @@ class GLM {
 
 			//dispo
 			$this->get_transporteur_disponible_date_periode();
+			/*
+			echo 'dispo de base: ';
+			echo var_dump($this->array_transporteurs_disponible_date_and_periode);
+			echo '---';
+			*/
+
 
 			//puis * contraintes
 			$this->get_transporteur_inactive();
 			$this->get_transporeur_non_disponibilite_date();
+			/*
+			echo ' non dispo date: ';
+			echo var_dump($this->array_transporteurs_non_disponible_date);
+			echo '---';
+			*/
+
 			$this->get_transporteur_already_transport_date_and_period();
+			/*
+			echo ' deja transport: ';
+			echo var_dump($this->array_transporteurs_deja_transporteurs_pour_date_et_periode_transport);
+			echo '---';
+			*/
+
 			$this->get_transporteur_inatteignable();
 			$this->get_transporteur_contrainte_beneficaire();
+
 			$this->get_transporteur_already_permanence_date();
 
 
 			$array_transporteur_id = array_diff($this->array_transporteurs_disponible_date_and_periode, $this->array_transporteurs_inactive, $this->array_transporteurs_non_disponible_date, $this->array_transporteurs_inatteignable_aujourdhui, $this->array_transporteurs_contrainte_beneficaire, $this->array_transporteurs_deja_transporteurs_pour_date_et_periode_transport, $this->array_transporteur_a_la_permanence);
-			
+
 			foreach($array_transporteur_id as $transporteur) {
 				$this->array_transporteur[] = new Transporteur($transporteur);
 				$matrix_ranking[][0] = $transporteur;
