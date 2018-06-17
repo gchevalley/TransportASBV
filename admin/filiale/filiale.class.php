@@ -1844,6 +1844,7 @@ class Filiale {
 				$data_facturation_transports_csv = array();
 
 				$load_needed_class_and_interface = load_class_and_interface(array('Trajet_Pre_Defini'));
+				$load_needed_class_and_interface = load_class_and_interface(array('Contact', 'Repondant', 'Repondant_Categorie'));
 
 				// csv headers
 				$data_facturation_transports_csv[] = array("DO_NODOC", "DO_TYPE", "DO_DATE1", "DO_TIME", "DO_REF1", "DO_MONTANT", "DO_COMPTE", "AD_CODE", "AD_TITRE", "AD_NOM", "AD_PRENOM", "AD_RUE_1", "AD_RUE_2", "AD_NPA", "AD_VILLE", "AD_ADR2", "AD_GRPTXT", "AD_UPD", "DL_NOLIGNE", "DL_DETTYP", "DL_ARTCODE", "DL_DESC", "DL_DATE1", "DL_QTE1", "DL_PRIX", "DL_UNITE", "DL_MONTANT", "DEBUG_datetime", "DEBUG_nbreKm", "DEBUG_storedCost", "DEBUG_depart", "DEBUG_arrivee", "DEBUG_distanceVille1Ville2", "DEBUG_distanceVille1Ville2Forfait", "DEBUG_checkDistance");
@@ -1936,19 +1937,119 @@ class Filiale {
 							}
 
 
-							$data_facturation_repondant[] = array(
-								 mb_convert_encoding($tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
-								 mb_convert_encoding($tmp_beneficiaire_nom_complet['nom'], 'ISO-8859-1', 'UTF-8'),
-								 "",
-								 mb_convert_encoding( $facturation_repondant_prenom, 'ISO-8859-1', 'UTF-8'),
-								 mb_convert_encoding( $facturation_repondant_nom, 'ISO-8859-1', 'UTF-8'),
-								 mb_convert_encoding( $facturation_repondant_adresse, 'ISO-8859-1', 'UTF-8'),
-								 mb_convert_encoding( $facturation_repondant_adresse_complement, 'ISO-8859-1', 'UTF-8'),
-								 $facturation_repondant_npa,
-								 $facturation_repondant_ville
-							);
+
 					}
 
+					//facturation data
+					$repondant_id_facturation = $tmp_beneficiaire->has_repondant();
+					if ($repondant_id_facturation == True) {
+
+						$repondant_facturation = new Repondant($repondant_id_facturation);
+						$adresse_repondant = $repondant_facturation->get_adresse();
+
+						if (isset($adresse_repondant['nom_complet']['prenom'])) {
+							$facturation_repondant_prenom = $adresse_repondant['nom_complet']['prenom'];
+						} else {
+							$facturation_repondant_prenom = '';
+						}
+
+						if (isset($adresse_repondant['nom_complet']['nom'])) {
+							$facturation_repondant_nom = $adresse_repondant['nom_complet']['nom'];
+						} else {
+							$facturation_repondant_nom = '';
+						}
+
+						if (isset($adresse_repondant['adresse'])) {
+							$facturation_repondant_adresse = $adresse_repondant['adresse'];
+						} else {
+							$facturation_repondant_adresse = '';
+						}
+
+						if (isset($adresse_repondant['adresse_complement'])) {
+							$facturation_repondant_adresse_complement = $adresse_repondant['adresse_complement'];
+						} else {
+							$facturation_repondant_adresse_complement = '';
+						}
+
+						if (isset($adresse_repondant['npa'])) {
+							$facturation_repondant_npa = $adresse_repondant['npa'];
+						} else {
+							$facturation_repondant_npa = '';
+						}
+
+						if (isset($adresse_repondant['ville'])) {
+							$facturation_repondant_ville = $adresse_repondant['ville'];
+						} else {
+							$facturation_repondant_ville = '';
+						}
+
+						$data_facturation_repondant[] = array(
+							 mb_convert_encoding($tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
+							 mb_convert_encoding($tmp_beneficiaire_nom_complet['nom'], 'ISO-8859-1', 'UTF-8'),
+							 "",
+							 mb_convert_encoding( $facturation_repondant_prenom, 'ISO-8859-1', 'UTF-8'),
+							 mb_convert_encoding( $facturation_repondant_nom, 'ISO-8859-1', 'UTF-8'),
+							 mb_convert_encoding( $facturation_repondant_adresse, 'ISO-8859-1', 'UTF-8'),
+							 mb_convert_encoding( $facturation_repondant_adresse_complement, 'ISO-8859-1', 'UTF-8'),
+							 $facturation_repondant_npa,
+							 mb_convert_encoding( $facturation_repondant_ville, 'ISO-8859-1', 'UTF-8'),
+						);
+
+					}
+
+					if ($tmp_beneficiaire->has_autre_adresse_facturation() == True) {
+						$autre_adresse_facturation = $tmp_beneficiaire->get_adresse_facturation();
+
+						if (isset($autre_adresse_facturation['nom_complet']['prenom'])) {
+							$facturation_autre_adresse_facturation_prenom = $autre_adresse_facturation['nom_complet']['prenom'];
+						} else {
+							$facturation_autre_adresse_facturation_prenom = '';
+						}
+
+						if (isset($autre_adresse_facturation['nom_complet']['nom'])) {
+							$facturation_autre_adresse_facturation_nom = $autre_adresse_facturation['nom_complet']['nom'];
+						} else {
+							$facturation_autre_adresse_facturation_nom = '';
+						}
+
+						if (isset($autre_adresse_facturation['adresse'])) {
+							$facturation_autre_adresse_facturation_adresse = $autre_adresse_facturation['adresse'];
+						} else {
+							$facturation_autre_adresse_facturation_adresse = '';
+						}
+
+						if (isset($autre_adresse_facturation['adresse_complement'])) {
+							$facturation_autre_adresse_facturation_adresse_complement = $autre_adresse_facturation['adresse_complement'];
+						} else {
+							$facturation_autre_adresse_facturation_adresse_complement = '';
+						}
+
+						if (isset($autre_adresse_facturation['npa'])) {
+							$facturation_autre_adresse_facturation_npa = $autre_adresse_facturation['npa'];
+						} else {
+							$facturation_autre_adresse_facturation_npa = '';
+						}
+
+						if (isset($autre_adresse_facturation['ville'])) {
+							$facturation_autre_adresse_facturation_ville = $autre_adresse_facturation['ville'];
+						} else {
+							$facturation_autre_adresse_facturation_ville = '';
+						}
+
+
+						$data_facturation_repondant[] = array(
+							 mb_convert_encoding($tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
+							 mb_convert_encoding($tmp_beneficiaire_nom_complet['nom'], 'ISO-8859-1', 'UTF-8'),
+							 "",
+							 mb_convert_encoding( $facturation_autre_adresse_facturation_prenom, 'ISO-8859-1', 'UTF-8'),
+							 mb_convert_encoding( $facturation_autre_adresse_facturation_nom, 'ISO-8859-1', 'UTF-8'),
+							 mb_convert_encoding( $facturation_autre_adresse_facturation_adresse, 'ISO-8859-1', 'UTF-8'),
+							 mb_convert_encoding( $facturation_autre_adresse_facturation_adresse_complement, 'ISO-8859-1', 'UTF-8'),
+							 $facturation_autre_adresse_facturation_npa,
+							 mb_convert_encoding( $facturation_autre_adresse_facturation_ville, 'ISO-8859-1', 'UTF-8'),
+						);
+
+					}
 
 					$total = 0;
 
@@ -2258,7 +2359,6 @@ class Filiale {
 
 				} // boucle passagers avec facture ce mois
 
-
 				$sql_firstTime = "SELECT beneficiaire.* , MIN(transport.date_transport) AS firstDate ";
 				$sql_firstTime .= " FROM transport, transport_transporteur, beneficiaire ";
 				$sql_firstTime .= " WHERE transport.id = transport_transporteur.id_transport ";
@@ -2267,10 +2367,47 @@ class Filiale {
 				$sql_firstTime .= " AND transport.is_annule=0 ";
 				$sql_firstTime .= " GROUP BY transport.id_beneficiaire ";
 				$sql_firstTime .= " HAVING YEAR(firstDate)=" . $data_to_display['facturation_year']['value'];
-				$sql_firstTime .= " ANd MONTH(firstDate)=" . $data_to_display['facturation_month']['value'];
+				$sql_firstTime .= " AND MONTH(firstDate)=" . $data_to_display['facturation_month']['value'];
 
 
-				$sth = $dbh->query($sql_firstTime);
+
+				$sql_subquery_something_recent = 'SELECT transport.id_beneficiaire ';
+				$sql_subquery_something_recent .= " FROM transport INNER JOIN transport_transporteur ON transport.id = transport_transporteur.id_transport ";
+				$sql_subquery_something_recent .= " WHERE id_filiale=" . $_SESSION['filiale']['id'];
+
+				if (isset($data_to_display['id_beneficiaire']['value']) && Beneficiaire::id_exists($data_to_display['id_beneficiaire']['value'])) {
+					$sql_subquery_something_recent .= " AND transport.id_beneficiaire=" . $data_to_display['id_beneficiaire']['value'];
+				}
+
+				$sql_subquery_something_recent .= " AND transport.id_beneficiaire = beneficiaire.id ";
+				$sql_subquery_something_recent .= " AND transport.is_cloture=1";
+				$sql_subquery_something_recent .= " AND transport.is_annule=0";
+				$sql_subquery_something_recent .= " AND transport.date_transport> '2018-04-30' ";
+				$sql_subquery_something_recent .= " AND transport.date_transport< '" . $data_to_display['facturation_year']['value'] . "-" . $data_to_display['facturation_month']['value'] . "-01' ";
+				$sql_subquery_something_recent .= " GROUP BY transport.id_beneficiaire ";
+
+				$sql_nothing_recent = "SELECT transport.id_beneficiaire, beneficiaire.*, COUNT(transport.id_beneficiaire), SUM(transport.nbre_kilometres), SUM(transport.cout_trajet + transport.cout_variable) ";
+				$sql_nothing_recent .= " FROM transport INNER JOIN transport_transporteur ON transport.id = transport_transporteur.id_transport, beneficiaire ";
+				$sql_nothing_recent .= " WHERE id_filiale=" . $_SESSION['filiale']['id'];
+
+				if (isset($data_to_display['id_beneficiaire']['value']) && Beneficiaire::id_exists($data_to_display['id_beneficiaire']['value'])) {
+					$sql_nothing_recent .= " AND transport.id_beneficiaire=" . $data_to_display['id_beneficiaire']['value'] . " ";
+				}
+
+				$sql_nothing_recent .= " AND transport.id_beneficiaire = beneficiaire.id ";
+				$sql_nothing_recent .= " AND transport.is_cloture=1";
+				$sql_nothing_recent .= " AND transport.is_annule=0";
+				$sql_nothing_recent .= " AND MONTH(transport.date_transport)=" . $data_to_display['facturation_month']['value'];
+				$sql_nothing_recent .= " AND YEAR(transport.date_transport)=" . $data_to_display['facturation_year']['value'];
+				$sql_nothing_recent .= " AND transport.id_beneficiaire NOT IN (" . $sql_subquery_something_recent . ")";
+				$sql_nothing_recent .= " GROUP BY transport.id_beneficiaire ";
+				$sql_nothing_recent .= " ORDER BY beneficiaire.nom, beneficiaire.prenom";
+
+				echo $sql_nothing_recent;
+
+
+
+				$sth = $dbh->query($sql_nothing_recent);
 				$new_beneficaire_mois_facturation = $sth->fetchAll(PDO::FETCH_ASSOC);
 
 
