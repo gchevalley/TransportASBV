@@ -232,6 +232,8 @@ switch ($action) {
 							}
 						}
 
+
+
 						$tmp_benevole->editerAttributs($attr_benevole, $new_value_benevole);
 						$tmp_benevole->editerAttributsParticipationFiliale($attr_benevole_participation_filiale, $new_value_benevole_participation_filiale);
 
@@ -248,8 +250,6 @@ switch ($action) {
 								$array_disponibilite_benevole[] = array('value' => $row['value'], 'id_categorie' => $row['id_categorie'], 'id_jour_semaine' => $row['id_jour_semaine'], 'id_periode_journee' => $row['id_periode_journee']);
 							}
 						}
-						$tmp_benevole->editerAttributsDisponibilite($array_disponibilite_benevole, $array_dispo_need_update);
-
 
 						//contrainte si necessaire
 						$check_loading_class = load_class_and_interface(array('Beneficiaire'));

@@ -252,6 +252,8 @@ class Repondant implements Contact {
 
 	private function mountAdresseArray() {
 
+		$this->array_adresse['lien_beneficiaire'] = $this->lien_beneficiaire;
+
 		$this->array_adresse['nom_complet']['prenom'] = $this->prenom;
 		$this->array_adresse['nom_complet']['nom'] = $this->nom;
 

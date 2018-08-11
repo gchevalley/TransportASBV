@@ -145,9 +145,10 @@ switch ($action) {
 
 			if (isset($_SESSION['last_page']['module']) && $_SESSION['last_page']['module'] == 'transport' && $_SESSION['last_page']['action'] == 'add' ) {
 				$_SESSION['last_page']['data_to_display']['id_beneficiaire'] = $tmp_beneficiaire->get_id();
+				require ('./base/base.reload_page.php');
 			}
-
-			require ('./base/base.reload_page.php');
+			
+			echo Beneficiaire::form('list');
 
 		}
 		break;

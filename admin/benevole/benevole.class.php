@@ -383,11 +383,12 @@ class Benevole implements Contact {
 
 		//si array de retour non vide :
 		if (count($result_participation_in_filiale)>0) {
-
-			if (Filiale::id_exists($_SESSION['filiale']['id'])) {
-				$tmp_filiale = new Filiale($_SESSION['filiale']['id']);
-			} else {
-				//souci au niveau de la session...
+			if (isset($_SESSION['filiale']['id'])) {
+				if (Filiale::id_exists($_SESSION['filiale']['id'])) {
+					$tmp_filiale = new Filiale($_SESSION['filiale']['id']);
+				} else {
+					//souci au niveau de la session...
+				}
 			}
 
 			$this->current_filiale_found = FALSE;
@@ -1707,6 +1708,7 @@ class Benevole implements Contact {
 			$geocode_to_import = $sth->fetchAll(PDO::FETCH_ASSOC);
 
 			//geocoding des adresses
+			/*
 			if (count($geocode_to_import) > 0) {
 				$load_needed_class_and_interface = load_class_and_interface(array('Geocode'));
 				$control_var = Geocode::gmap_geocoding($geocode_to_import);
@@ -1725,6 +1727,7 @@ class Benevole implements Contact {
 
 			$sth = $dbh->query($sql);
 			$benevole_geocode = $sth->fetchAll(PDO::FETCH_ASSOC);
+
 
 			$html_code .= '<div id="map_benevoles" class="map_google"></div>';
 
@@ -1776,6 +1779,7 @@ class Benevole implements Contact {
 					}
 				$html_code .= '});';
 			$html_code .= '</script>';
+			*/
 		}
 
 
@@ -2058,7 +2062,7 @@ class Benevole implements Contact {
 			$html_code .= '</p>';
 		}
 
-
+		/*
 		if (checkInternetConnection()) {
 			$html_code .= '<div id="map_benevole" class="map_google"></div>';
 
@@ -2068,6 +2072,7 @@ class Benevole implements Contact {
 				$html_code .= '});';
 			$html_code .= '</script>';
 		}
+		*/
 
 		if ($data_to_display['is_transporteur']['value'] == 1) {
 			$html_code .= Benevole::form_disponibilite($action, $data_to_display, 'transport', TRUE);
@@ -2395,6 +2400,7 @@ class Benevole implements Contact {
 
 
 		// stats + graph
+		/*
 		if ($data_to_display['is_transporteur']['value'] == 1) {
 
 			$load_needed_class_and_interface = load_class_and_interface(array('pData', 'pChart'));
@@ -2500,7 +2506,8 @@ class Benevole implements Contact {
 				$html_code .= '</p>';
 			}
 		}
-
+		*/
+		
 		$html_code .= load_help_file_if_necessary(get_file_help_path(__FILE__, $action));
 
 		return $html_code;
@@ -2587,6 +2594,7 @@ class Benevole implements Contact {
 
 										for ($j=1; $j<=count($txt_jour); $j++) {
 											$html_code .= '<td>';
+											$html_code .= '<input type="hidden" value="0" name="dispo_' . $categorie . '-jour_' . $j . '-periode_' . $i . '">';
 											$html_code .= '<input type="checkbox" ';
 											$html_code .= 'id="dispo_' . $categorie . '-jour_' . $j . '-periode_' . $i . '"' ;
 											$html_code .= 'name="dispo_' . $categorie . '-jour_' . $j . '-periode_' . $i . '"' ;

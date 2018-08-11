@@ -895,6 +895,14 @@ class Transport {
 			$point_depart = $this->get_point_depart();
 			$point_arrivee = $this->get_point_arrivee();
 
+
+			if ($this->aller_retour == 1) {
+				$simple_ou_allerRetour = "aller-retour";
+			} else {
+				$simple_ou_allerRetour = "aller simple";
+			}
+
+
 			$html_email = '';
 			$html_email .= '<p>';
 
@@ -904,10 +912,9 @@ class Transport {
 					$html_email .= 'Cher';
 				}
 
-				$html_email .= ' ' . ucfirst($tmp_benevole_nom_complet['titre']) . ' ' . $tmp_benevole_nom_complet['nom'] . ', un nouveau transport vous a été attribué.';
+				$html_email .= ' ' . ucfirst($tmp_benevole_nom_complet['titre']) . ' ' . $tmp_benevole_nom_complet['nom'] . ', un nouveau transport vous a été attribué. ';
 
-			$html_email .= 'Il s\'agit de :</p>';
-
+			$html_email .= 'Il s\'agit d\'un <strong>' . $simple_ou_allerRetour . '</strong> :</p>';
 
 			$html_email .= '<table>';
 				$html_email .= '<thead>';

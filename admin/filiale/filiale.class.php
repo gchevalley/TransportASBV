@@ -1872,6 +1872,8 @@ class Filiale {
 					//mount le beneficiaire
 					$tmp_beneficiaire = new Beneficiaire($facture_individuelle['id_beneficiaire']);
 
+					$tmp_beneficiaire_nom_complet = $tmp_beneficiaire->get_nom_complet();
+
 
 					//charge les trajet du mois pour le beneficiaire concerne
 					$sql = "SELECT transport.* ";
@@ -1942,7 +1944,7 @@ class Filiale {
 
 					//facturation data
 					$repondant_id_facturation = $tmp_beneficiaire->has_repondant();
-					if ($repondant_id_facturation == True) {
+					if ($repondant_id_facturation != False) {
 
 						$repondant_facturation = new Repondant($repondant_id_facturation);
 						$adresse_repondant = $repondant_facturation->get_adresse();
@@ -1984,6 +1986,7 @@ class Filiale {
 						}
 
 						$data_facturation_repondant[] = array(
+							"passager" . $facture_individuelle['id_beneficiaire'] . "_repondant" . $repondant_id_facturation,
 							 mb_convert_encoding($tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
 							 mb_convert_encoding($tmp_beneficiaire_nom_complet['nom'], 'ISO-8859-1', 'UTF-8'),
 							 "",
@@ -1993,6 +1996,7 @@ class Filiale {
 							 mb_convert_encoding( $facturation_repondant_adresse_complement, 'ISO-8859-1', 'UTF-8'),
 							 $facturation_repondant_npa,
 							 mb_convert_encoding( $facturation_repondant_ville, 'ISO-8859-1', 'UTF-8'),
+							 $adresse_repondant['lien_beneficiaire']
 						);
 
 					}
@@ -2038,6 +2042,7 @@ class Filiale {
 
 
 						$data_facturation_repondant[] = array(
+							"passager" . $facture_individuelle['id_beneficiaire'] . "_autreAdresseDeFacturation",
 							 mb_convert_encoding($tmp_beneficiaire_nom_complet['prenom'], 'ISO-8859-1', 'UTF-8'),
 							 mb_convert_encoding($tmp_beneficiaire_nom_complet['nom'], 'ISO-8859-1', 'UTF-8'),
 							 "",
@@ -2402,9 +2407,6 @@ class Filiale {
 				$sql_nothing_recent .= " AND transport.id_beneficiaire NOT IN (" . $sql_subquery_something_recent . ")";
 				$sql_nothing_recent .= " GROUP BY transport.id_beneficiaire ";
 				$sql_nothing_recent .= " ORDER BY beneficiaire.nom, beneficiaire.prenom";
-
-				echo $sql_nothing_recent;
-
 
 
 				$sth = $dbh->query($sql_nothing_recent);

@@ -3,16 +3,27 @@
 if (isset($_SESSION['last_page'])) {
 	unset($_POST);
 	unset($_GET);
-	$module = $_SESSION['last_page']['module'];
-	$sub_module = $_SESSION['last_page']['sub_module'];
-	$action = $_SESSION['last_page']['action'];
-	$id = $_SESSION['last_page']['id'];
-	
+	if ( isset($_SESSION['last_page']['module']) ) {
+		$module = $_SESSION['last_page']['module'];
+	}
+
+	if ( isset($_SESSION['last_page']['sub_module']) ) {
+		$sub_module = $_SESSION['last_page']['sub_module'];
+	}
+
+	if ( isset($_SESSION['last_page']['action']) ) {
+		$action = $_SESSION['last_page']['action'];
+	}
+
+	if ( isset($_SESSION['last_page']['id']) ) {
+		$id = $_SESSION['last_page']['id'];
+	}
+
 	require('./base/base.module.php');
-	
+
 } else {
 	require('./processing/dashboard.php');
 }
-	
+
 
 ?>
