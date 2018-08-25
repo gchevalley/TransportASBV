@@ -703,6 +703,28 @@ class Benevole implements Contact {
 	} // class.Benevole.func.get_telephone
 
 
+	public function has_tel_fixe() {
+		$this->group_telephone_into_array();
+
+		if (isset($this->array_telephone['tel_fixe'])) {
+			return $this->array_telephone['tel_fixe'];
+		} else {
+			return FALSE;
+		}
+	}
+
+
+	public function has_tel_mobile() {
+		$this->group_telephone_into_array();
+
+		if (isset($this->array_telephone['tel_mobile'])) {
+			return $this->array_telephone['tel_mobile'];
+		} else {
+			return FALSE;
+		}
+	}
+
+
 	public static function id_exists($id_to_check) {
 
 		$input_args = func_get_args();
@@ -2507,7 +2529,7 @@ class Benevole implements Contact {
 			}
 		}
 		*/
-		
+
 		$html_code .= load_help_file_if_necessary(get_file_help_path(__FILE__, $action));
 
 		return $html_code;

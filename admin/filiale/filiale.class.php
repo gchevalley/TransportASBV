@@ -1847,7 +1847,7 @@ class Filiale {
 				$load_needed_class_and_interface = load_class_and_interface(array('Contact', 'Repondant', 'Repondant_Categorie'));
 
 				// csv headers
-				$data_facturation_transports_csv[] = array("DO_NODOC", "DO_TYPE", "DO_DATE1", "DO_TIME", "DO_REF1", "DO_MONTANT", "DO_COMPTE", "AD_CODE", "AD_TITRE", "AD_NOM", "AD_PRENOM", "AD_RUE_1", "AD_RUE_2", "AD_NPA", "AD_VILLE", "AD_ADR2", "AD_GRPTXT", "AD_UPD", "DL_NOLIGNE", "DL_DETTYP", "DL_ARTCODE", "DL_DESC", "DL_DATE1", "DL_QTE1", "DL_PRIX", "DL_UNITE", "DL_MONTANT", "DEBUG_datetime", "DEBUG_nbreKm", "DEBUG_storedCost", "DEBUG_depart", "DEBUG_arrivee", "DEBUG_distanceVille1Ville2", "DEBUG_distanceVille1Ville2Forfait", "DEBUG_checkDistance");
+				$data_facturation_transports_csv[] = array("DO_NODOC", "DO_TYPE", "DO_DATE1", "DO_TIME", "DO_REF1", "DO_MONTANT", "DO_COMPTE", "AD_CODE", "AD_TITRE", "AD_NOM", "AD_PRENOM", "AD_RUE_1", "AD_RUE_2", "AD_NPA", "AD_VILLE", "AD_ADR2", "AD_TEL1", "DEBUG_TEL1_SRC", "AD_TEL3", "DEBUG_TEL3_SRC", "AD_GRPTXT", "AD_UPD", "DL_NOLIGNE", "DL_DETTYP", "DL_ARTCODE", "DL_DESC", "DL_DATE1", "DL_QTE1", "DL_PRIX", "DL_UNITE", "DL_MONTANT", "DEBUG_datetime", "DEBUG_nbreKm", "DEBUG_storedCost", "DEBUG_depart", "DEBUG_arrivee", "DEBUG_distanceVille1Ville2", "DEBUG_distanceVille1Ville2Forfait", "DEBUG_checkDistance");
 
 				$data_facturation_repondant = array();
 
@@ -1873,6 +1873,24 @@ class Filiale {
 					$tmp_beneficiaire = new Beneficiaire($facture_individuelle['id_beneficiaire']);
 
 					$tmp_beneficiaire_nom_complet = $tmp_beneficiaire->get_nom_complet();
+
+					if ( $tmp_beneficiaire->has_tel_fixe() ) {
+						$facturation_tel_fixe = format_tel( $tmp_beneficiaire->has_tel_fixe() );
+						$facturation_tel_fixe_src = 'passager';
+					} else {
+						$facturation_tel_fixe = '';
+						$facturation_tel_fixe_src = '#N/A';
+					}
+
+					if ( $tmp_beneficiaire->has_tel_mobile() ) {
+						$facturation_tel_mobile = format_tel( $tmp_beneficiaire->has_tel_mobile() );
+						$facturation_tel_mobile_src = 'passager';
+					} else {
+						$facturation_tel_mobile = '';
+						$facturation_tel_mobile_src = '#N/A';
+					}
+
+
 
 
 					//charge les trajet du mois pour le beneficiaire concerne
@@ -1984,6 +2002,18 @@ class Filiale {
 						} else {
 							$facturation_repondant_ville = '';
 						}
+
+						if ( $repondant_facturation->has_tel_fixe() ) {
+							$facturation_tel_fixe = format_tel( $repondant_facturation->has_tel_fixe() );
+							$facturation_tel_fixe_src = 'repondant';
+						}
+
+						if ( $repondant_facturation->has_tel_mobile() ) {
+							$facturation_tel_mobile = format_tel( $repondant_facturation->has_tel_mobile() );
+							$facturation_tel_mobile_src = 'repondant';
+						}
+
+
 
 						$data_facturation_repondant[] = array(
 							"passager" . $facture_individuelle['id_beneficiaire'] . "_repondant" . $repondant_id_facturation,
@@ -2324,6 +2354,10 @@ class Filiale {
 							$tmp_beneficiaire_adresse_winbiz['npa'],
 							mb_convert_encoding($tmp_beneficiaire_adresse_winbiz['ville'], 'ISO-8859-1', 'UTF-8'),
 							$facturation_transport_pour,
+							$facturation_tel_fixe,
+							$facturation_tel_fixe_src,
+							$facturation_tel_mobile,
+							$facturation_tel_mobile_src,
 							'PASSAGER',
 							2,
 							1,
@@ -2601,7 +2635,7 @@ class Filiale {
 			//transport avec & sans chauffeur !
 			$result = $sth->fetchAll(PDO::FETCH_ASSOC);
 
-			$data_reboursement_transports_csv[] = array("DO_NODOC", "DO_TYPE", "DO_DATE1", "DO_REF1", "DO_MONTANT", "DO_COMPTE", "AD_CODE", "AD_TITRE", "AD_NOM", "AD_PRENOM", "AD_RUE_1", "AD_RUE_2", "AD_NPA", "AD_VILLE", "AD_GRPTXT", "AD_UPD", "DL_NOLIGNE", "DL_DETTYP", "DL_ARTCODE", "DL_DESC", "DL_DATE1", "DL_QTE1", "DL_PRIX", "DL_UNITE", "DL_MONTANT", "DO_BAN_PAY", "DEBUG_datetime", "DEBUG_courses", "DEBUG_nbreKm_reval", "DEBUG_storedKm", "DEBUG_storedCost", "DEBUG_transportId");
+			$data_reboursement_transports_csv[] = array("DO_NODOC", "DO_TYPE", "DO_DATE1", "DO_REF1", "DO_MONTANT", "DO_COMPTE", "AD_CODE", "AD_TITRE", "AD_NOM", "AD_PRENOM", "AD_RUE_1", "AD_RUE_2", "AD_NPA", "AD_VILLE", "AD_TEL1", "AD_TEL3", "AD_GRPTXT", "AD_UPD", "DL_NOLIGNE", "DL_DETTYP", "DL_ARTCODE", "DL_DESC", "DL_DATE1", "DL_QTE1", "DL_PRIX", "DL_UNITE", "DL_MONTANT", "DO_BAN_PAY", "DEBUG_datetime", "DEBUG_courses", "DEBUG_nbreKm_reval", "DEBUG_storedKm", "DEBUG_storedCost", "DEBUG_transportId");
 
 			//presentation des resultats des mois choisis avec les differentes fonctionnalites de comptabilite
 			if (count($result) > 0) {
@@ -2651,6 +2685,18 @@ class Filiale {
 
 					//mount le beneficiaire
 					$tmp_transporteur = new Transporteur($facture_individuelle['id_transporteur']);
+
+					if ( $tmp_transporteur->has_tel_fixe() ) {
+						$remboursement_tel_fixe = format_tel( $tmp_transporteur->has_tel_fixe() );
+					} else {
+						$remboursement_tel_fixe = '';
+					}
+
+					if ( $tmp_transporteur->has_tel_mobile() ) {
+						$remboursement_tel_mobile = format_tel( $tmp_transporteur->has_tel_mobile() );
+					} else {
+						$remboursement_tel_mobile = '';
+					}
 
 
 					//charge les trajet du mois pour le transporteur concerne
@@ -2858,6 +2904,8 @@ class Filiale {
 						mb_convert_encoding($remboursement_csv_chauffeur_adresse_complement, 'ISO-8859-1', 'UTF-8'),
 						$remboursement_csv_chauffeur_npa,
 						mb_convert_encoding($remboursement_csv_chauffeur_ville, 'ISO-8859-1', 'UTF-8'),
+						$remboursement_tel_fixe,
+						$remboursement_tel_mobile,
 						'CHAUFFEUR',
 						2,
 						1,

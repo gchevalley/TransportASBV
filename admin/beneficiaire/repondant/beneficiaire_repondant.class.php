@@ -307,6 +307,30 @@ class Repondant implements Contact {
 		return $this->array_telephone;
 	} // class.Repondant.func.get_telephone
 
+
+	public function has_tel_fixe() {
+		$this->group_telephone_into_array();
+
+		if (isset($this->array_telephone['tel_fixe'])) {
+			return $this->array_telephone['tel_fixe'];
+		} else {
+			return FALSE;
+		}
+	}
+
+
+	public function has_tel_mobile() {
+		$this->group_telephone_into_array();
+
+		if (isset($this->array_telephone['tel_mobile'])) {
+			return $this->array_telephone['tel_mobile'];
+		} else {
+			return FALSE;
+		}
+	}
+
+
+
 	public function get_id_categorie() {
 		return $this->id_categorie;
 	}
