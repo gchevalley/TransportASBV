@@ -3,17 +3,17 @@ asbv_transport_local-sqldump.sql
 asbv_transport_local.sql
 website/img/stat_transporteur.png
 
-backup/backup_zip
+backup/backup_zip/*
 !backup/backup_zip/.gitkeep
 
-extract
+extract/*
 !extract/.gitkeep
 
-listing
+listing/*
 !listing/.gitkeep
 
-facturation/
+facturation/*
 !facturation/.gitkeep
 
-remboursement/
+remboursement/*
 !remboursement/.gitkeep
