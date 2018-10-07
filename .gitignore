@@ -1,19 +1,19 @@
-/config/config.inc.php
-/asbv_transport_local-sqldump.sql
-/asbv_transport_local.sql
-/website/img/stat_transporteur.png
+config/config.inc.php
+asbv_transport_local-sqldump.sql
+asbv_transport_local.sql
+website/img/stat_transporteur.png
 
-/backup/backup_zip
-!/backup/backup_zip/.gitkeep
+backup/backup_zip
+!backup/backup_zip/.gitkeep
 
-/extract
-!/extract/.gitkeep
+extract
+!extract/.gitkeep
 
-/listing
-!/listing/.gitkeep
+listing
+!listing/.gitkeep
 
-/facturation/
-!/facturation/.gitkeep
+facturation/
+!facturation/.gitkeep
 
-/remboursement/
-!/remboursement/.gitkeep
+remboursement/
+!remboursement/.gitkeep

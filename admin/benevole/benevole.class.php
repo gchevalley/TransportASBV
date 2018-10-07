@@ -118,10 +118,12 @@ class Benevole implements Contact {
 		global $dbh;
 
 		//ajoute l'entree geocode
+		/*
 		if (checkInternetConnection('maps.google.com')) {
 			$load_needed_class_and_interface = load_class_and_interface(array('Geocode'));
 			$array_coor = Geocode::find_combination($adresse, $npa, $ville, $pays, TRUE);
 		}
+		*/
 
 		//processing de nettoyage des args de la fonction
 		$titre = $dbh->quote($titre);
